@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"os"
 
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 )
 
-const DbConnnect = "user=brandon dbname=wow"
+const DbConnnect = "dbname=wow password=brandon"
 
+var db *sql.DB
+var latest int
 var api_key = os.Getenv("BLIZZARD_API_KEY")
 
 type AuctionDumpFile struct {
@@ -47,38 +49,27 @@ type Auction struct {
 	Context    int    `json:context`
 }
 
+func checkError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func fetchDumps() []AuctionDumpFile {
+	log.Println("Fetching auction dump files...")
 
 	resp, err := http.Get("https://us.api.battle.net/wow/auction/data/archimonde?locale=en_US&apikey=" + api_key)
-	if err != nil {
-		log.Fatalf("Error during fetch: %v", err.Error())
-		os.Exit(1)
-	}
+	checkError(err)
 
 	var data AuctionDumpResponse
 	decoder := json.NewDecoder(resp.Body)
 
 	err = decoder.Decode(&data)
-
-	if err != nil {
-		log.Fatalf("Error while decoding JSON: %v", err.Error())
-		os.Exit(1)
-	}
+	checkError(err)
 
 	log.Printf("Retrieved %v files.\n", len(data.Files))
 
 	return data.Files
-}
-
-func initDatabase() {
-	db, err := sql.Open("postgres", DbConnnect)
-
-	defer db.Close()
-
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
 }
 
 func fetchAuctions(file AuctionDumpFile) {
@@ -101,22 +92,74 @@ func fetchAuctions(file AuctionDumpFile) {
 		return
 	}
 
+	txn, err := db.Begin()
+	checkError(err)
+
+	stmt, err := txn.Prepare(pq.CopyIn("auctions", "auction_id", "item_id", "owner", "owner_realm", "bid", "buyout", "quantity", "time_left", "rand", "seed", "context"))
+	checkError(err)
+
 	for _, auction := range data.Auctions {
-		log.Printf("Inserting %v\n", auction)
+		_, err = stmt.Exec(
+			auction.Auc,
+			auction.Item,
+			auction.Owner,
+			auction.OwnerRealm,
+			auction.Bid,
+			auction.Buyout,
+			auction.Quantity,
+			auction.TimeLeft,
+			auction.Rand,
+			auction.Seed,
+			auction.Context)
+
+		checkError(err)
 	}
+
+	_, err = stmt.Exec()
+	checkError(err)
+
+	err = stmt.Close()
+	checkError(err)
+
+	err = txn.Commit()
+	checkError(err)
 }
 
 func main() {
+	var err error
+
 	if len(api_key) == 0 {
 		log.Fatal("API key not found. Exiting.")
 		os.Exit(1)
 	}
 
-	initDatabase()
+	db, err = sql.Open("postgres", DbConnnect)
+	defer db.Close()
+	checkError(err)
+
+	rows, err := db.Query(`SELECT last_modified FROM auction_files ORDER BY last_modified DESC LIMIT 1`)
+	checkError(err)
+
+	for rows.Next() {
+		err = rows.Scan(&latest)
+		checkError(err)
+	}
+
+	log.Printf("Latest file is %v\n", latest)
 
 	files := fetchDumps()
 
 	for _, file := range files {
-		fetchAuctions(file)
+		var fileId int
+
+		if file.LastModified > latest {
+			fetchAuctions(file)
+			err = db.QueryRow(`INSERT INTO auction_files (url, last_modified) VALUES ($1, $2) RETURNING id`, file.Url, file.LastModified).Scan(&fileId)
+			checkError(err)
+		} else {
+			log.Printf("Skipping. File too old: %v\n", file.Url)
+		}
 	}
+
+	log.Println("Done.")
 }
