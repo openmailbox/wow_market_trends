@@ -39,7 +39,7 @@ SET default_with_oids = false;
 CREATE TABLE public.auction_files (
     id integer NOT NULL,
     url character varying,
-    last_modified integer
+    last_modified bigint
 );
 
 
@@ -76,12 +76,12 @@ CREATE TABLE public.auctions (
     item_id integer,
     owner character varying,
     owner_realm character varying,
-    bid integer,
-    buyout integer,
+    bid bigint,
+    buyout bigint,
     quantity integer,
     time_left character varying,
     rand integer,
-    seed integer,
+    seed bigint,
     context integer
 );
 
