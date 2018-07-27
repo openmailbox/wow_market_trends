@@ -23,6 +23,7 @@ func updatePeriods(db *sql.DB) {
 	var itemId, high, low, volume int
 
 	timestamp := time.Now()
+	lastPeriod := loadLastPeriod(db)
 
 	rows, err := db.Query(`SELECT item_id, MAX(bid), MIN(bid), SUM(quantity) FROM auctions GROUP BY item_id`)
 	checkError(err)
@@ -39,10 +40,10 @@ func updatePeriods(db *sql.DB) {
 		checkError(err)
 
 		period := Period{ItemId: itemId, High: high, Low: low, Volume: volume, CreatedAt: timestamp}
-
 		auctions := loadAuctions(db, period.ItemId)
+
 		period.Close = calculateClose(auctions, period.ItemId)
-		period.Open = calculateOpen(db, period.ItemId)
+		period.Open = calculateOpen(lastPeriod, period.ItemId)
 
 		_, err = stmt.Exec(period.ItemId, period.High, period.Low, period.Volume, period.Open, period.Close, period.CreatedAt)
 		checkError(err)
@@ -85,19 +86,15 @@ func calculateClose(auctions []Auction, itemId int) int {
 	}
 }
 
-func calculateOpen(db *sql.DB, itemId int) int {
-	var count, last int
+func calculateOpen(lastPeriod []Period, itemId int) int {
+	last := 0
 
-	err := db.QueryRow(`SELECT COUNT(1) FROM periods WHERE item_id = $1`, itemId).Scan(&count)
-	checkError(err)
-
-	if count == 0 {
-		return 0
+	for _, period := range lastPeriod {
+		if period.ItemId == itemId {
+			last = period.Close
+			break
+		}
 	}
-
-	err = db.QueryRow(`SELECT COALESCE(close, 0) FROM periods WHERE item_id = $1 
-		ORDER BY created_at DESC LIMIT 1`, itemId).Scan(&last)
-	checkError(err)
 
 	return last
 }
@@ -112,4 +109,24 @@ func bidOverVolume(auctions []Auction) int {
 	}
 
 	return totalBid / totalQuantity
+}
+
+func loadLastPeriod(db *sql.DB) []Period {
+	var item_id, close int
+	var timestamp time.Time
+	var periods []Period
+
+	db.QueryRow(`SELECT MAX(created_at) FROM periods`).Scan(&timestamp)
+
+	rows, err := db.Query(`SELECT item_id, close FROM periods WHERE created_at = $1`, timestamp)
+	checkError(err)
+
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(&item_id, &close)
+		period := Period{ItemId: item_id, Close: close}
+		periods = append(periods, period)
+	}
+
+	return periods
 }
