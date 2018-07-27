@@ -24,6 +24,7 @@ func updatePeriods(db *sql.DB) {
 
 	timestamp := time.Now()
 	lastPeriod := loadLastPeriod(db)
+	auctions := loadAuctions(db)
 
 	rows, err := db.Query(`SELECT item_id, MAX(bid), MIN(bid), SUM(quantity) FROM auctions GROUP BY item_id`)
 	checkError(err)
@@ -40,7 +41,6 @@ func updatePeriods(db *sql.DB) {
 		checkError(err)
 
 		period := Period{ItemId: itemId, High: high, Low: low, Volume: volume, CreatedAt: timestamp}
-		auctions := loadAuctions(db, period.ItemId)
 
 		period.Close = calculateClose(auctions, period.ItemId)
 		period.Open = calculateOpen(lastPeriod, period.ItemId)
@@ -63,6 +63,10 @@ func calculateClose(auctions []Auction, itemId int) int {
 	var short, medium, long, veryLong []Auction
 
 	for _, auction := range auctions {
+		if auction.Item != itemId {
+			continue
+		}
+
 		switch auction.TimeLeft {
 		case "SHORT":
 			short = append(short, auction)
@@ -96,6 +100,7 @@ func calculateOpen(lastPeriod []Period, itemId int) int {
 		}
 	}
 
+	// TODO: Either go back further or use the current price
 	return last
 }
 

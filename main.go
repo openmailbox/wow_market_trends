@@ -26,7 +26,7 @@ func main() {
 	defer db.Close()
 	checkError(err)
 
-	//refreshAuctions(db, api_key)
+	refreshAuctions(db, api_key)
 	updatePeriods(db)
 
 	log.Println("Done.")
