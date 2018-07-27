@@ -158,6 +158,24 @@ func fetchAuctions(file AuctionDumpFile) []Auction {
 	return data.Auctions
 }
 
+func loadAuctions(db *sql.DB, itemId int) []Auction {
+	var auctions []Auction
+	var auction_id, bid, buyout, quantity int
+	var time_left string
+
+	rows, err := db.Query(`SELECT auction_id, bid, buyout, quantity, time_left FROM auctions WHERE item_id = $1`, itemId)
+	checkError(err)
+
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&auction_id, &bid, &buyout, &quantity, &time_left)
+		checkError(err)
+		auctions = append(auctions, Auction{Auc: auction_id, Bid: bid, Buyout: buyout, Quantity: quantity, TimeLeft: time_left})
+	}
+
+	return auctions
+}
+
 func loadLatest(db *sql.DB) int {
 	var latest int
 
