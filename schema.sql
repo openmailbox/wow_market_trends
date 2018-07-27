@@ -110,6 +110,45 @@ ALTER SEQUENCE public.auctions_id_seq OWNED BY public.auctions.id;
 
 
 --
+-- Name: periods; Type: TABLE; Schema: public; Owner: brandon
+--
+
+CREATE TABLE public.periods (
+    id integer NOT NULL,
+    item_id integer,
+    high bigint,
+    low bigint,
+    volume integer,
+    open bigint,
+    close bigint,
+    created_at timestamp with time zone
+);
+
+
+ALTER TABLE public.periods OWNER TO brandon;
+
+--
+-- Name: periods_id_seq; Type: SEQUENCE; Schema: public; Owner: brandon
+--
+
+CREATE SEQUENCE public.periods_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.periods_id_seq OWNER TO brandon;
+
+--
+-- Name: periods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: brandon
+--
+
+ALTER SEQUENCE public.periods_id_seq OWNED BY public.periods.id;
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: brandon
 --
 
@@ -121,6 +160,13 @@ ALTER TABLE ONLY public.auction_files ALTER COLUMN id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.auctions ALTER COLUMN id SET DEFAULT nextval('public.auctions_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: brandon
+--
+
+ALTER TABLE ONLY public.periods ALTER COLUMN id SET DEFAULT nextval('public.periods_id_seq'::regclass);
 
 
 --
@@ -137,6 +183,21 @@ ALTER TABLE ONLY public.auction_files
 
 ALTER TABLE ONLY public.auctions
     ADD CONSTRAINT auctions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: periods_pkey; Type: CONSTRAINT; Schema: public; Owner: brandon
+--
+
+ALTER TABLE ONLY public.periods
+    ADD CONSTRAINT periods_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_item_id; Type: INDEX; Schema: public; Owner: brandon
+--
+
+CREATE INDEX idx_item_id ON public.periods USING btree (item_id);
 
 
 --
