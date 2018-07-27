@@ -14,29 +14,6 @@ func checkError(err error) {
 	}
 }
 
-func loadItemIds(db *sql.DB) []int {
-	var count int
-
-	err := db.QueryRow(`SELECT count(DISTINCT item_id) FROM auctions`).Scan(&count)
-	checkError(err)
-
-	ids := make([]int, count)
-	i := 0
-
-	rows, err := db.Query(`SELECT DISTINCT item_id FROM auctions`)
-	checkError(err)
-
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&ids[i])
-	}
-
-	err = rows.Err()
-	checkError(err)
-
-	return ids
-}
-
 func main() {
 	api_key := os.Getenv("BLIZZARD_API_KEY")
 
@@ -49,10 +26,8 @@ func main() {
 	defer db.Close()
 	checkError(err)
 
-	refreshAuctions(db, api_key)
-
-	ids := loadItemIds(db)
-	log.Printf("Found %v unique items.", len(ids))
+	//refreshAuctions(db, api_key)
+	updatePeriods(db)
 
 	log.Println("Done.")
 }

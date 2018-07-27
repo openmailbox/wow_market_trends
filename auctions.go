@@ -3,10 +3,9 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/lib/pq"
 	"log"
 	"net/http"
-
-	"github.com/lib/pq"
 )
 
 type AuctionDumpResponse struct {
