@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const DbConnnect = "dbname=wow host=/run/postgresql"
+const dbConnect = "dbname=wow host=/run/postgresql"
 
 func checkError(err error) {
 	if err != nil {
@@ -15,18 +15,18 @@ func checkError(err error) {
 }
 
 func main() {
-	api_key := os.Getenv("BLIZZARD_API_KEY")
+	apiKey := os.Getenv("BLIZZARD_API_KEY")
 
-	if len(api_key) == 0 {
+	if len(apiKey) == 0 {
 		log.Fatal("API key not found. Exiting.")
 		os.Exit(1)
 	}
 
-	db, err := sql.Open("postgres", DbConnnect)
+	db, err := sql.Open("postgres", dbConnect)
 	defer db.Close()
 	checkError(err)
 
-	refreshAuctions(db, api_key)
+	refreshAuctions(db, apiKey)
 	updatePeriods(db)
 
 	log.Println("Done.")

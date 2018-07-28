@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-type Period struct {
-	ItemId    int
+type period struct {
+	ItemID    int
 	High      int
 	Low       int
 	Volume    int
@@ -20,7 +20,7 @@ type Period struct {
 func updatePeriods(db *sql.DB) {
 	log.Println("Updating periods.")
 
-	var itemId, high, low, volume int
+	var itemID, high, low, volume int
 
 	timestamp := time.Now()
 	lastPeriod := loadLastPeriod(db)
@@ -37,15 +37,15 @@ func updatePeriods(db *sql.DB) {
 	checkError(err)
 
 	for rows.Next() {
-		err = rows.Scan(&itemId, &high, &low, &volume)
+		err = rows.Scan(&itemID, &high, &low, &volume)
 		checkError(err)
 
-		period := Period{ItemId: itemId, High: high, Low: low, Volume: volume, CreatedAt: timestamp}
+		p := period{ItemID: itemID, High: high, Low: low, Volume: volume, CreatedAt: timestamp}
 
-		period.Close = calculateClose(auctions, period.ItemId)
-		period.Open = calculateOpen(lastPeriod, period.ItemId)
+		p.Close = calculateClose(auctions, p.ItemID)
+		p.Open = calculateOpen(lastPeriod, p.ItemID)
 
-		_, err = stmt.Exec(period.ItemId, period.High, period.Low, period.Volume, period.Open, period.Close, period.CreatedAt)
+		_, err = stmt.Exec(p.ItemID, p.High, p.Low, p.Volume, p.Open, p.Close, p.CreatedAt)
 		checkError(err)
 	}
 
@@ -59,11 +59,11 @@ func updatePeriods(db *sql.DB) {
 	checkError(err)
 }
 
-func calculateClose(auctions []Auction, itemId int) int {
-	var short, medium, long, veryLong []Auction
+func calculateClose(auctions []auction, itemID int) int {
+	var short, medium, long, veryLong []auction
 
 	for _, auction := range auctions {
-		if auction.Item != itemId {
+		if auction.Item != itemID {
 			continue
 		}
 
@@ -90,11 +90,11 @@ func calculateClose(auctions []Auction, itemId int) int {
 	}
 }
 
-func calculateOpen(lastPeriod []Period, itemId int) int {
+func calculateOpen(lastPeriod []period, itemID int) int {
 	last := 0
 
 	for _, period := range lastPeriod {
-		if period.ItemId == itemId {
+		if period.ItemID == itemID {
 			last = period.Close
 			break
 		}
@@ -104,7 +104,7 @@ func calculateOpen(lastPeriod []Period, itemId int) int {
 	return last
 }
 
-func bidOverVolume(auctions []Auction) int {
+func bidOverVolume(auctions []auction) int {
 	totalBid := 0
 	totalQuantity := 0
 
@@ -116,10 +116,10 @@ func bidOverVolume(auctions []Auction) int {
 	return totalBid / totalQuantity
 }
 
-func loadLastPeriod(db *sql.DB) []Period {
-	var item_id, close int
+func loadLastPeriod(db *sql.DB) []period {
+	var itemID, close int
 	var timestamp time.Time
-	var periods []Period
+	var periods []period
 
 	db.QueryRow(`SELECT MAX(created_at) FROM periods`).Scan(&timestamp)
 
@@ -128,9 +128,9 @@ func loadLastPeriod(db *sql.DB) []Period {
 
 	defer rows.Close()
 	for rows.Next() {
-		rows.Scan(&item_id, &close)
-		period := Period{ItemId: item_id, Close: close}
-		periods = append(periods, period)
+		rows.Scan(&itemID, &close)
+		p := period{ItemID: itemID, Close: close}
+		periods = append(periods, p)
 	}
 
 	return periods

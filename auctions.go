@@ -8,26 +8,26 @@ import (
 	"net/http"
 )
 
-type AuctionDumpResponse struct {
-	Files []AuctionDumpFile `json:"files"`
+type auctionDumpResponse struct {
+	Files []auctionDumpFile `json:"files"`
 }
 
-type AuctionDumpFile struct {
-	Url          string `json:"url"`
+type auctionDumpFile struct {
+	URL          string `json:"url"`
 	LastModified int    `json:"lastmodified"`
 }
 
-type AuctionRealm struct {
+type auctionRealm struct {
 	Name string `json:name`
 	Slug string `json:slug`
 }
 
-type AuctionFetchResponse struct {
-	Realms   []AuctionRealm `json:realms`
-	Auctions []Auction      `json:auctions`
+type auctionFetchResponse struct {
+	Realms   []auctionRealm `json:realms`
+	Auctions []auction      `json:auctions`
 }
 
-type Auction struct {
+type auction struct {
 	Auc        int    `json:auc`
 	Item       int    `json:item`
 	Owner      string `json:owner`
@@ -41,13 +41,13 @@ type Auction struct {
 	Context    int    `json:context`
 }
 
-func refreshAuctions(db *sql.DB, api_key string) {
-	var fileId int
+func refreshAuctions(db *sql.DB, apiKey string) {
+	var fileID int
 
 	deleteExisting(db)
 
 	latest := loadLatest(db)
-	files := fetchDumps(api_key)
+	files := fetchDumps(apiKey)
 
 	for _, file := range files {
 		if file.LastModified > latest {
@@ -56,16 +56,16 @@ func refreshAuctions(db *sql.DB, api_key string) {
 			createAuctions(db, auctions)
 
 			err := db.QueryRow(`INSERT INTO auction_files (url, last_modified) VALUES ($1, $2) RETURNING id`,
-				file.Url, file.LastModified).Scan(&fileId)
+				file.URL, file.LastModified).Scan(&fileID)
 			checkError(err)
 		} else {
-			log.Printf("Skipping. File too old: %v\n", file.Url)
+			log.Printf("Skipping. File too old: %v\n", file.URL)
 		}
 	}
 
 }
 
-func createAuctions(db *sql.DB, auctions []Auction) {
+func createAuctions(db *sql.DB, auctions []auction) {
 	txn, err := db.Begin()
 	checkError(err)
 
@@ -118,13 +118,13 @@ func deleteExisting(db *sql.DB) {
 	checkError(err)
 }
 
-func fetchDumps(api_key string) []AuctionDumpFile {
+func fetchDumps(apiKey string) []auctionDumpFile {
 	log.Println("Fetching auction dump files...")
 
-	resp, err := http.Get("https://us.api.battle.net/wow/auction/data/archimonde?locale=en_US&apikey=" + api_key)
+	resp, err := http.Get("https://us.api.battle.net/wow/auction/data/archimonde?locale=en_US&apikey=" + apiKey)
 	checkError(err)
 
-	var data AuctionDumpResponse
+	var data auctionDumpResponse
 	decoder := json.NewDecoder(resp.Body)
 
 	err = decoder.Decode(&data)
@@ -135,42 +135,42 @@ func fetchDumps(api_key string) []AuctionDumpFile {
 	return data.Files
 }
 
-func fetchAuctions(file AuctionDumpFile) []Auction {
-	log.Printf("Fetching from %v\n", file.Url)
+func fetchAuctions(file auctionDumpFile) []auction {
+	log.Printf("Fetching from %v\n", file.URL)
 
-	resp, err := http.Get(file.Url)
+	resp, err := http.Get(file.URL)
 	if err != nil {
 		log.Printf(err.Error())
 		log.Println("\nSkipping file.")
-		return make([]Auction, 0)
+		return make([]auction, 0)
 	}
 
-	var data AuctionFetchResponse
+	var data auctionFetchResponse
 	decoder := json.NewDecoder(resp.Body)
 
 	err = decoder.Decode(&data)
 	if err != nil {
 		log.Printf(err.Error())
 		log.Println("\nSkipping file.")
-		return make([]Auction, 0)
+		return make([]auction, 0)
 	}
 
 	return data.Auctions
 }
 
-func loadAuctions(db *sql.DB) []Auction {
-	var auctions []Auction
-	var item_id, bid, quantity int
-	var time_left string
+func loadAuctions(db *sql.DB) []auction {
+	var auctions []auction
+	var itemID, bid, quantity int
+	var timeLeft string
 
 	rows, err := db.Query(`SELECT item_id, bid, quantity, time_left FROM auctions`)
 	checkError(err)
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&item_id, &bid, &quantity, &time_left)
+		err = rows.Scan(&itemID, &bid, &quantity, &timeLeft)
 		checkError(err)
-		auctions = append(auctions, Auction{Item: item_id, Bid: bid, Quantity: quantity, TimeLeft: time_left})
+		auctions = append(auctions, auction{Item: itemID, Bid: bid, Quantity: quantity, TimeLeft: timeLeft})
 	}
 
 	return auctions
