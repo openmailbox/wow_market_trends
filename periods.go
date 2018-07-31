@@ -2,18 +2,19 @@ package main
 
 import (
 	"database/sql"
-	"github.com/lib/pq"
 	"log"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 type period struct {
-	ItemID    int
-	High      int
-	Low       int
-	Volume    int
-	Open      int
-	Close     int
+	ItemID    int `json:item_id`
+	High      int `json:high`
+	Low       int `json:low`
+	Volume    int `json:volume`
+	Open      int `json:open`
+	Close     int `json:close`
 	CreatedAt time.Time
 }
 

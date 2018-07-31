@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"strings"
 )
 
 const dbConnect = "dbname=wow host=/run/postgresql"
@@ -22,12 +23,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := sql.Open("postgres", dbConnect)
-	defer db.Close()
-	checkError(err)
+	if len(os.Args) > 1 && strings.Compare(os.Args[1], "serve") == 0 {
+		startServer()
+	} else {
+		db, err := sql.Open("postgres", dbConnect)
+		defer db.Close()
+		checkError(err)
 
-	refreshAuctions(db, apiKey)
-	updatePeriods(db)
+		refreshAuctions(db, apiKey)
+		updatePeriods(db)
 
-	log.Println("Done.")
+		log.Println("Done.")
+	}
 }
