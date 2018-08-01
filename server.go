@@ -9,19 +9,16 @@ import (
 const localAddress = ":8081"
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Incoming request from %v", r.RemoteAddr)
+	log.Printf("%v / from  %v\n", r.Method, r.RemoteAddr)
 
 	periods := make([]period, 3)
-	encoder := json.NewEncoder(w)
 
-	err := encoder.Encode(periods)
-	if err != nil {
-		panic(err)
-	}
+	json.NewEncoder(w).Encode(periods)
+	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
 }
 
 func startServer() {
-	log.Printf("Listening on %v\n", localAddress)
 	http.HandleFunc("/", handleRequest)
+	log.Printf("Listening on %v\n", localAddress)
 	log.Fatal(http.ListenAndServe(localAddress, nil))
 }

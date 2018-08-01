@@ -9,13 +9,13 @@ import (
 )
 
 type period struct {
-	ItemID    int `json:item_id`
-	High      int `json:high`
-	Low       int `json:low`
-	Volume    int `json:volume`
-	Open      int `json:open`
-	Close     int `json:close`
-	CreatedAt time.Time
+	ItemID    int       `json:"item_id"`
+	High      int       `json:"high"`
+	Low       int       `json:"low"`
+	Volume    int       `json:"volume"`
+	Open      int       `json:"open"`
+	Close     int       `json:"close"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func updatePeriods(db *sql.DB) {
