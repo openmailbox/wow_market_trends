@@ -25,7 +25,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 	lookupID := itemIDParam[0]
 
-	rows, err := db.Query(`SELECT item_id, high, low, volume, open, close, created_at FROM periods WHERE item_id = $1`, lookupID)
+	rows, err := db.Query(`SELECT item_id, high, low, volume, open, close, created_at FROM periods WHERE item_id = $1 ORDER BY id DESC`, lookupID)
 	checkError(err)
 
 	var periods []period
