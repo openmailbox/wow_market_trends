@@ -3,9 +3,10 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/lib/pq"
 	"log"
 	"net/http"
+
+	"github.com/lib/pq"
 )
 
 type auctionDumpResponse struct {
@@ -18,27 +19,27 @@ type auctionDumpFile struct {
 }
 
 type auctionRealm struct {
-	Name string `json:name`
-	Slug string `json:slug`
+	Name string `json:"name"`
+	Slug string `json:"slug"`
 }
 
 type auctionFetchResponse struct {
-	Realms   []auctionRealm `json:realms`
-	Auctions []auction      `json:auctions`
+	Realms   []auctionRealm `json:"realms"`
+	Auctions []auction      `json:"auctions"`
 }
 
 type auction struct {
-	Auc        int    `json:auc`
-	Item       int    `json:item`
-	Owner      string `json:owner`
-	OwnerRealm string `json:ownerRealm`
-	Bid        int    `json:bid`
-	Buyout     int    `json:buyout`
-	Quantity   int    `json:quantity`
-	TimeLeft   string `json:timeLeft`
-	Rand       int    `json:rand`
-	Seed       int    `json:seed`
-	Context    int    `json:context`
+	Auc        int    `json:"auc"`
+	Item       int    `json:"item"`
+	Owner      string `json:"owner"`
+	OwnerRealm string `json:"ownerRealm"`
+	Bid        int    `json:"bid"`
+	Buyout     int    `json:"buyout"`
+	Quantity   int    `json:"quantity"`
+	TimeLeft   string `json:"timeLeft"`
+	Rand       int    `json:"rand"`
+	Seed       int    `json:"seed"`
+	Context    int    `json:"context"`
 }
 
 func refreshAuctions(db *sql.DB, apiKey string) {

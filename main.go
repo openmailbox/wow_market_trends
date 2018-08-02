@@ -16,8 +16,12 @@ func checkError(err error) {
 }
 
 func main() {
+	db, err := sql.Open("postgres", dbConnect)
+	defer db.Close()
+	checkError(err)
+
 	if len(os.Args) > 1 && strings.Compare(os.Args[1], "serve") == 0 {
-		startServer()
+		startServer(db)
 	} else {
 		apiKey := os.Getenv("BLIZZARD_API_KEY")
 
@@ -25,10 +29,6 @@ func main() {
 			log.Fatal("API key not found. Exiting.")
 			os.Exit(1)
 		}
-
-		db, err := sql.Open("postgres", dbConnect)
-		defer db.Close()
-		checkError(err)
 
 		refreshAuctions(db, apiKey)
 		updatePeriods(db)
