@@ -55,7 +55,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 func startServer(database *sql.DB) {
 	db = database
-	http.HandleFunc("/", handleRequest)
+	http.HandleFunc("/history", handleRequest)
 	log.Printf("Listening on %v\n", localAddress)
 	log.Fatal(http.ListenAndServe(localAddress, nil))
 }
