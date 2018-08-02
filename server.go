@@ -13,14 +13,22 @@ const localAddress = ":8081"
 var db *sql.DB
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
-	log.Printf("%v / from  %v\n", r.Method, r.RemoteAddr)
+	log.Printf("%v / from  %v with params: %v\n", r.Method, r.RemoteAddr, r.URL.Query())
 
-	lookupId := 106540 // TODO: change this to a param
-	var periods []period
+	itemIDParam := r.URL.Query()["itemId"]
 
-	rows, err := db.Query(`SELECT item_id, high, low, volume, open, close, created_at FROM periods WHERE item_id = $1`, lookupId)
+	if len(itemIDParam) == 0 {
+		log.Printf("Completed %v %v\n", http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity))
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	lookupID := itemIDParam[0]
+
+	rows, err := db.Query(`SELECT item_id, high, low, volume, open, close, created_at FROM periods WHERE item_id = $1`, lookupID)
 	checkError(err)
 
+	var periods []period
 	var itemID, high, low, volume, open, close int
 	var createdAt time.Time
 	var nextPeriod period
