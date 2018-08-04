@@ -12,6 +12,10 @@ const localAddress = ":8081"
 
 var db *sql.DB
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%v / from  %v with params: %v\n", r.Method, r.RemoteAddr, r.URL.Query())
 
@@ -22,6 +26,8 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
+
+	enableCors(&w)
 
 	lookupID := itemIDParam[0]
 
