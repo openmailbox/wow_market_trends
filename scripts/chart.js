@@ -1,31 +1,75 @@
-var callback = function() {
-  console.log(this.responseText);
-}
+var Chart = (function() {
+    var data   = [];
+    var chart  = null;
+    var itemId = new URL(window.location.href).searchParams.get("itemId");
+
+    var callback = function (evt) {
+        data = JSON.parse(this.response, parseDate);
+        drawChart();
+    };
+
+    var drawChart = function() {
+        chart = new CanvasJS.Chart("chartContainer",
+            {
+                title: {
+                    text: "Price History for Item " + itemId
+                },
+                zoomEnabled: true,
+                axisY: {
+                    includeZero: false,
+                    title: "Prices",
+                    prefix: ""
+                },
+                axisX: {
+                    interval: 2,
+                    intervalType: "hour",
+                    valueFormatString: "MMM-DD-HH",
+                    labelAngle: -45
+                },
+                data: [
+                    {
+                        type: "candlestick",
+                        dataPoints: formatData()
+                    }
+                ]
+            });
+        chart.render();
+    }
+
+    var formatData = function () {
+        return data.map(function (i) {
+            return { x: i.created_at, y: [i.open, i.high, i.low, i.close] }
+        });
+    };
+
+    var init = function () {
+        var oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", callback);
+        //oReq.open("GET", "http://wow.open-mailbox.com/history?itemId=55550");
+        oReq.open("GET", "http://localhost:8081/history?itemId=" + itemId);
+        oReq.send();
+    };
+
+    var parseDate = function (key, value) {
+        var a;
+
+        if (key === 'created_at' && typeof value === 'string') {
+            a = /(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d+)/.exec(value)
+            if (a) {
+                return new Date(a[1], a[2], a[3], a[4], a[5], a[6]);
+            }
+        }
+
+        return value;
+    }
+
+    return {
+        getChart: function () { return chart; },
+        getData: function () { return data; },
+        init: init
+    };
+})();
 
 window.onload = function () {
-    var oReq = new XMLHttpRequest();
-    oReq.addEventListener("load", callback);
-    //oReq.open("GET", "http://wow.open-mailbox.com/history?itemId=55550");
-    oReq.open("GET", "http://localhost:8081/history?itemId=36211");
-    oReq.send();
-
-	var chart = new CanvasJS.Chart("chartContainer", {
-		title:{
-			text: "My First Chart in CanvasJS"              
-		},
-		data: [              
-		{
-			// Change type to "doughnut", "line", "splineArea", etc.
-			type: "column",
-			dataPoints: [
-				{ label: "apple",  y: 10  },
-				{ label: "orange", y: 15  },
-				{ label: "banana", y: 25  },
-				{ label: "mango",  y: 30  },
-				{ label: "grape",  y: 28  }
-			]
-		}
-		]
-	});
-	chart.render();
+    Chart.init();
 }
