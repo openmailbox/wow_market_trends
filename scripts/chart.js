@@ -45,8 +45,8 @@ var Chart = (function() {
     var init = function () {
         var oReq = new XMLHttpRequest();
         oReq.addEventListener("load", callback);
-        //oReq.open("GET", "http://wow.open-mailbox.com/history?itemId=55550");
-        oReq.open("GET", "http://localhost:8081/history?itemId=" + itemId);
+        oReq.open("GET", "http://wow.open-mailbox.com/history?itemId=" + itemId);
+        //oReq.open("GET", "http://localhost:8081/history?itemId=" + itemId);
         oReq.send();
     };
 
