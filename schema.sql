@@ -201,6 +201,13 @@ CREATE INDEX idx_item_id ON public.periods USING btree (item_id);
 
 
 --
+-- Name: periods_created_at_idx; Type: INDEX; Schema: public; Owner: brandon
+--
+
+CREATE INDEX periods_created_at_idx ON public.periods USING btree (created_at);
+
+
+--
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
 --
 
