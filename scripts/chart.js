@@ -56,7 +56,7 @@ var Chart = (function() {
         if (key === 'created_at' && typeof value === 'string') {
             a = /(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d+)/.exec(value)
             if (a) {
-                return new Date(a[1], a[2], a[3], a[4], a[5], a[6]);
+                return new Date(a[1], a[2] - 1, a[3], a[4], a[5], a[6]);
             }
         }
 
