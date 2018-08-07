@@ -34,7 +34,7 @@ func main() {
 
 		refreshAuctions(db, apiKey)
 		updatePeriods(db)
-		//updateItems(db)
+		updateItems(db)
 
 		log.Println("Done.")
 	}

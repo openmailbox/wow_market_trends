@@ -22,30 +22,36 @@ func updateItems(db *sql.DB) {
 
 	log.Printf("Found %v new item IDs for import.\n", count)
 
-	if count == 0 {
-		return
-	}
-
 	var nextID int
+	var nextItem item
+
+	db.QueryRow(`SELECT COUNT(1) FROM items WHERE name IS NULL`).Scan(&count)
+	log.Printf("Updating names for %v items.", count)
 
 	rows, err := db.Query(`SELECT item_id FROM items WHERE name IS NULL`)
+	checkError(err)
+
+	stmt, err := db.Prepare(`UPDATE items SET name = $1 WHERE item_id = $2`)
 	checkError(err)
 
 	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&nextID)
+		checkError(err)
 
 		url := fmt.Sprintf("https://us.api.battle.net/wow/item/%v?locale=en_US&apikey=%v", nextID, apiKey)
 		resp, err := http.Get(url)
 		checkError(err)
 
-		log.Printf("%v", resp)
-
-		var nextItem item
-
 		json.NewDecoder(resp.Body).Decode(&nextItem)
 
-		//db.Exec(`UPDATE items SET name = $1 WHERE item_id = $2`, nextItem.Name, nextItem.ItemID)
-		//checkError(err)
+		_, err = stmt.Exec(nextItem.Name, nextItem.ItemID)
+		checkError(err)
 	}
+
+	_, err = stmt.Exec()
+	checkError(err)
+
+	err = stmt.Close()
+	checkError(err)
 }
