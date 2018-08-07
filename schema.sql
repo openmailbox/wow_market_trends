@@ -110,6 +110,41 @@ ALTER SEQUENCE public.auctions_id_seq OWNED BY public.auctions.id;
 
 
 --
+-- Name: items; Type: TABLE; Schema: public; Owner: brandon
+--
+
+CREATE TABLE public.items (
+    id integer NOT NULL,
+    item_id integer,
+    name character varying,
+    details json
+);
+
+
+ALTER TABLE public.items OWNER TO brandon;
+
+--
+-- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: brandon
+--
+
+CREATE SEQUENCE public.items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.items_id_seq OWNER TO brandon;
+
+--
+-- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: brandon
+--
+
+ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
+
+
+--
 -- Name: periods; Type: TABLE; Schema: public; Owner: brandon
 --
 
@@ -166,6 +201,13 @@ ALTER TABLE ONLY public.auctions ALTER COLUMN id SET DEFAULT nextval('public.auc
 -- Name: id; Type: DEFAULT; Schema: public; Owner: brandon
 --
 
+ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: brandon
+--
+
 ALTER TABLE ONLY public.periods ALTER COLUMN id SET DEFAULT nextval('public.periods_id_seq'::regclass);
 
 
@@ -186,6 +228,22 @@ ALTER TABLE ONLY public.auctions
 
 
 --
+-- Name: con_uniq_item_id; Type: CONSTRAINT; Schema: public; Owner: brandon
+--
+
+ALTER TABLE ONLY public.items
+    ADD CONSTRAINT con_uniq_item_id UNIQUE (item_id);
+
+
+--
+-- Name: items_pkey; Type: CONSTRAINT; Schema: public; Owner: brandon
+--
+
+ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: periods_pkey; Type: CONSTRAINT; Schema: public; Owner: brandon
 --
 
@@ -198,6 +256,20 @@ ALTER TABLE ONLY public.periods
 --
 
 CREATE INDEX idx_item_id ON public.periods USING btree (item_id);
+
+
+--
+-- Name: item_id_idx; Type: INDEX; Schema: public; Owner: brandon
+--
+
+CREATE INDEX item_id_idx ON public.items USING btree (item_id);
+
+
+--
+-- Name: name_idx; Type: INDEX; Schema: public; Owner: brandon
+--
+
+CREATE INDEX name_idx ON public.items USING btree (name);
 
 
 --
