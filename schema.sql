@@ -15,14 +15,14 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -33,7 +33,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: auction_files; Type: TABLE; Schema: public; Owner: brandon
+-- Name: auction_files; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.auction_files (
@@ -43,10 +43,8 @@ CREATE TABLE public.auction_files (
 );
 
 
-ALTER TABLE public.auction_files OWNER TO brandon;
-
 --
--- Name: auction_files_id_seq; Type: SEQUENCE; Schema: public; Owner: brandon
+-- Name: auction_files_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.auction_files_id_seq
@@ -57,17 +55,15 @@ CREATE SEQUENCE public.auction_files_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auction_files_id_seq OWNER TO brandon;
-
 --
--- Name: auction_files_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: brandon
+-- Name: auction_files_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.auction_files_id_seq OWNED BY public.auction_files.id;
 
 
 --
--- Name: auctions; Type: TABLE; Schema: public; Owner: brandon
+-- Name: auctions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.auctions (
@@ -86,10 +82,8 @@ CREATE TABLE public.auctions (
 );
 
 
-ALTER TABLE public.auctions OWNER TO brandon;
-
 --
--- Name: auctions_id_seq; Type: SEQUENCE; Schema: public; Owner: brandon
+-- Name: auctions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.auctions_id_seq
@@ -100,17 +94,15 @@ CREATE SEQUENCE public.auctions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auctions_id_seq OWNER TO brandon;
-
 --
--- Name: auctions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: brandon
+-- Name: auctions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.auctions_id_seq OWNED BY public.auctions.id;
 
 
 --
--- Name: items; Type: TABLE; Schema: public; Owner: brandon
+-- Name: items; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.items (
@@ -121,10 +113,8 @@ CREATE TABLE public.items (
 );
 
 
-ALTER TABLE public.items OWNER TO brandon;
-
 --
--- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: brandon
+-- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.items_id_seq
@@ -135,17 +125,15 @@ CREATE SEQUENCE public.items_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.items_id_seq OWNER TO brandon;
-
 --
--- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: brandon
+-- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
 
 
 --
--- Name: periods; Type: TABLE; Schema: public; Owner: brandon
+-- Name: periods; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.periods (
@@ -160,10 +148,8 @@ CREATE TABLE public.periods (
 );
 
 
-ALTER TABLE public.periods OWNER TO brandon;
-
 --
--- Name: periods_id_seq; Type: SEQUENCE; Schema: public; Owner: brandon
+-- Name: periods_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.periods_id_seq
@@ -174,45 +160,43 @@ CREATE SEQUENCE public.periods_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.periods_id_seq OWNER TO brandon;
-
 --
--- Name: periods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: brandon
+-- Name: periods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.periods_id_seq OWNED BY public.periods.id;
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: brandon
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.auction_files ALTER COLUMN id SET DEFAULT nextval('public.auction_files_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: brandon
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.auctions ALTER COLUMN id SET DEFAULT nextval('public.auctions_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: brandon
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: brandon
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.periods ALTER COLUMN id SET DEFAULT nextval('public.periods_id_seq'::regclass);
 
 
 --
--- Name: auction_files_pkey; Type: CONSTRAINT; Schema: public; Owner: brandon
+-- Name: auction_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.auction_files
@@ -220,7 +204,7 @@ ALTER TABLE ONLY public.auction_files
 
 
 --
--- Name: auctions_pkey; Type: CONSTRAINT; Schema: public; Owner: brandon
+-- Name: auctions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.auctions
@@ -228,7 +212,7 @@ ALTER TABLE ONLY public.auctions
 
 
 --
--- Name: con_uniq_item_id; Type: CONSTRAINT; Schema: public; Owner: brandon
+-- Name: con_uniq_item_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.items
@@ -236,7 +220,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- Name: items_pkey; Type: CONSTRAINT; Schema: public; Owner: brandon
+-- Name: items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.items
@@ -244,7 +228,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- Name: periods_pkey; Type: CONSTRAINT; Schema: public; Owner: brandon
+-- Name: periods_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.periods
@@ -252,35 +236,35 @@ ALTER TABLE ONLY public.periods
 
 
 --
--- Name: idx_item_id; Type: INDEX; Schema: public; Owner: brandon
+-- Name: idx_item_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_item_id ON public.periods USING btree (item_id);
 
 
 --
--- Name: item_id_idx; Type: INDEX; Schema: public; Owner: brandon
+-- Name: item_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX item_id_idx ON public.items USING btree (item_id);
 
 
 --
--- Name: name_idx; Type: INDEX; Schema: public; Owner: brandon
+-- Name: name_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX name_idx ON public.items USING btree (name);
 
 
 --
--- Name: periods_created_at_idx; Type: INDEX; Schema: public; Owner: brandon
+-- Name: periods_created_at_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX periods_created_at_idx ON public.periods USING btree (created_at);
 
 
 --
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
