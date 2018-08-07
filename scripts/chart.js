@@ -21,9 +21,9 @@ var Chart = (function() {
                     prefix: ""
                 },
                 axisX: {
-                    interval: 2,
+                    interval: 24,
                     intervalType: "hour",
-                    valueFormatString: "MMM-DD-HH",
+                    valueFormatString: "MMM-DD",
                     labelAngle: -45
                 },
                 data: [
