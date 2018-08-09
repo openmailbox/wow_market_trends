@@ -12,7 +12,3 @@ var Search = (function() {
         init: init
     };
 })();
-
-window.onload = function() {
-    Search.init();
-}

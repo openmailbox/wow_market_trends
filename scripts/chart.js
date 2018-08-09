@@ -73,7 +73,3 @@ var Chart = (function() {
         init: init
     };
 })();
-
-window.onload = function () {
-    Chart.init();
-}
