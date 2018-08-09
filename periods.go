@@ -28,7 +28,7 @@ func updatePeriods(db *sql.DB) {
 	lastPeriod := loadLastPeriod(db)
 	auctions := loadAuctions(db)
 
-	rows, err := db.Query(`SELECT item_id, MAX(bid), MIN(bid), SUM(quantity) FROM auctions GROUP BY item_id`)
+	rows, err := db.Query(`SELECT item_id, MAX(bid / quantity), MIN(bid / quantity), SUM(quantity) FROM auctions GROUP BY item_id`)
 	checkError(err)
 	defer rows.Close()
 
