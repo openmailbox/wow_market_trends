@@ -49,8 +49,8 @@ var Chart = (function() {
 
         var oReq = new XMLHttpRequest();
         oReq.addEventListener("load", callback);
-        //oReq.open("GET", "https://yara.open-mailbox.com/wow?itemId=" + itemId);
-        oReq.open("GET", "http://localhost:8081/history?itemId=" + itemId);
+        oReq.open("GET", "https://yara.open-mailbox.com/wow?itemId=" + itemId);
+        //oReq.open("GET", "http://localhost:8081/history?itemId=" + itemId);
         oReq.send();
     };
 
