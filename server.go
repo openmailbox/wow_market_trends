@@ -16,6 +16,44 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
+func handleNameSearch(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%v / from  %v with params: %v\n", r.Method, r.RemoteAddr, r.URL.Query())
+
+	searchTermParam := r.URL.Query()["search"]
+
+	if len(searchTermParam) == 0 {
+		log.Printf("Completed %v %v\n", http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity))
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	enableCors(&w)
+
+	searchTerm := searchTermParam[0]
+
+	rows, err := db.Query(`SELECT item_id, name FROM items WHERE name ~* $1`, searchTerm)
+	checkError(err)
+
+	var nextItem item
+	var items []item
+	var itemID int
+	var name string
+
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&itemID, &name)
+		checkError(err)
+
+		nextItem.ItemID = itemID
+		nextItem.Name = name
+
+		items = append(items, nextItem)
+	}
+
+	json.NewEncoder(w).Encode(items)
+	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
+}
+
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%v / from  %v with params: %v\n", r.Method, r.RemoteAddr, r.URL.Query())
 
@@ -67,6 +105,7 @@ func startServer(database *sql.DB) {
 	db = database
 	http.Handle("/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/history", handleRequest)
+	http.HandleFunc("/names", handleNameSearch)
 	log.Printf("Listening on %v\n", localAddress)
 	log.Fatal(http.ListenAndServe(localAddress, nil))
 }

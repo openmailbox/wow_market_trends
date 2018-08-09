@@ -45,6 +45,8 @@ var Chart = (function() {
     };
 
     var init = function () {
+        if (itemId === null) return;
+
         var oReq = new XMLHttpRequest();
         oReq.addEventListener("load", callback);
         //oReq.open("GET", "https://yara.open-mailbox.com/wow?itemId=" + itemId);
