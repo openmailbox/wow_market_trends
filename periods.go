@@ -10,6 +10,7 @@ import (
 
 type period struct {
 	ItemID    int       `json:"item_id"`
+	Name      string    `json:"name"`
 	High      int       `json:"high"`
 	Low       int       `json:"low"`
 	Volume    int       `json:"volume"`

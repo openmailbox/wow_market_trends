@@ -31,20 +31,24 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 	lookupID := itemIDParam[0]
 
-	rows, err := db.Query(`SELECT item_id, high, low, volume, open, close, created_at FROM periods WHERE item_id = $1 ORDER BY id DESC`, lookupID)
+	rows, err := db.Query(`SELECT periods.item_id, name, high, low, volume, open, close, created_at FROM periods 
+		INNER JOIN items on items.item_id = periods.item_id
+		WHERE periods.item_id = $1 ORDER BY periods.id DESC`, lookupID)
 	checkError(err)
 
 	var periods []period
 	var itemID, high, low, volume, open, close int
+	var name string
 	var createdAt time.Time
 	var nextPeriod period
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&itemID, &high, &low, &volume, &open, &close, &createdAt)
+		err = rows.Scan(&itemID, &name, &high, &low, &volume, &open, &close, &createdAt)
 		checkError(err)
 
 		nextPeriod.ItemID = itemID
+		nextPeriod.Name = name
 		nextPeriod.High = high
 		nextPeriod.Low = low
 		nextPeriod.Volume = volume

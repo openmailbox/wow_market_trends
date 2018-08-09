@@ -1,10 +1,12 @@
 var Chart = (function() {
-    var data   = [];
-    var chart  = null;
-    var itemId = new URL(window.location.href).searchParams.get("itemId");
+    var data     = [];
+    var chart    = null;
+    var itemId   = new URL(window.location.href).searchParams.get("itemId");
+    var itemName = null;
 
     var callback = function (evt) {
         data = JSON.parse(this.response, parseDate);
+        itemName = data[0].name;
         drawChart();
     };
 
@@ -12,7 +14,7 @@ var Chart = (function() {
         chart = new CanvasJS.Chart("chartContainer",
             {
                 title: {
-                    text: "Price History for Item " + itemId
+                    text: "Price History for Item " + itemName
                 },
                 zoomEnabled: true,
                 axisY: {
@@ -45,8 +47,8 @@ var Chart = (function() {
     var init = function () {
         var oReq = new XMLHttpRequest();
         oReq.addEventListener("load", callback);
-        oReq.open("GET", "https://yara.open-mailbox.com/wow?itemId=" + itemId);
-        //oReq.open("GET", "http://localhost:8081/history?itemId=" + itemId);
+        //oReq.open("GET", "https://yara.open-mailbox.com/wow?itemId=" + itemId);
+        oReq.open("GET", "http://localhost:8081/history?itemId=" + itemId);
         oReq.send();
     };
 
