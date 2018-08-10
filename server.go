@@ -18,7 +18,7 @@ const logFile = "log/server.log"
 var db *sql.DB
 
 func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Origin", "https://wow.open-mailbox.com")
 }
 
 func handleNameSearch(w http.ResponseWriter, r *http.Request) {
