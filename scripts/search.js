@@ -1,14 +1,55 @@
 var Search = (function() {
-    var init = function() {
-        var form = document.querySelector('form')
-        form.onsubmit = function(event) {
-            event.preventDefault();
-            console.log(event)
-            console.log('hello')
+    var timer = null;
+
+    var callback = function(event) {
+        data = JSON.parse(this.response);
+
+        var list = document.querySelector("#search-results");
+
+        while (list.firstChild !== null) {
+            list.firstChild.remove();
         }
+
+        if (data === null) return;
+
+        for (var i = 0; i < data.length; i++) {
+            var element = document.createElement("li");
+            var link    = document.createElement("a");
+
+            link.setAttribute("href", "?itemId=" + data[i].id);
+            link.textContent = data[i].name;
+
+            element.appendChild(link);
+            list.appendChild(element);
+        }
+    };
+
+    var init = function() {
+        var textField = document.querySelector('#search-text')
+
+        textField.addEventListener("input", function(event) {
+            event.preventDefault();
+
+            if (timer) clearTimeout(timer);
+
+            timer = setTimeout(sendQuery, 1000);
+        });
+    };
+
+    var sendQuery = function() {
+        timer = null;
+        var query = document.querySelector("#search-text").value;
+
+        if (query.length < 3) return;
+
+        var oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", callback);
+        oReq.open("GET", "names?search=" + query);
+        oReq.send();
     }
 
     return {
-        init: init
+        init: init,
+        getTimer: function() { return timer; }
     };
 })();
