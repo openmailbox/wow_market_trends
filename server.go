@@ -68,6 +68,7 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 
 	enableCors(&w)
 
+	// TODO: Filter out non-integer itemId param
 	lookupID := itemIDParam[0]
 
 	rows, err := db.Query(`SELECT periods.item_id, name, high, low, volume, open, close, created_at FROM periods

@@ -32,6 +32,7 @@ var Search = (function() {
 
             if (timer) clearTimeout(timer);
 
+            // TODO: Trigger sendQuery on page load if text is in the input? Or on focus?
             timer = setTimeout(sendQuery, 1000);
         });
     };
