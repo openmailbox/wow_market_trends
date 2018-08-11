@@ -13,14 +13,34 @@ var Chart = (function() {
     var drawChart = function() {
         chart = new CanvasJS.Chart("chartContainer",
             {
+                toolTip: {
+                    contentFormatter: function(e) {
+                        var point = e.entries[0].dataPoint;
+                        var str   = "";
+
+                        str += "<strong>" + point.label + "</strong>";
+                        str += "<br />";
+                        str += "<strong>Open:</strong> " + formatPriceLong(point.y[0]) + "<br />";
+                        str += "<strong>High:</strong> " + formatPriceLong(point.y[1]) + "<br />";
+                        str += "<strong>Low:</strong> " + formatPriceLong(point.y[2]) + "<br />";
+                        str += "<strong>Close:</strong> " + formatPriceLong(point.y[3]);
+
+                        return str;
+                    }
+                },
                 title: {
-                    text: "Price History for Item " + itemName
+                    text: "Price History for " + itemName
                 },
                 zoomEnabled: true,
                 axisY: {
                     includeZero: false,
-                    title: "Prices",
-                    prefix: ""
+                    title: "Price",
+                    prefix: "",
+                    labelFormatter: function(e) {
+                        if (e.value > 10000) return CanvasJS.formatNumber(Math.floor(e.value / 10000)) + "G";
+                        if (e.value > 100) return Math.floor(e.value / 100) + "S";
+                        return e.value + "C";
+                    }
                 },
                 axisX: {
                     interval: 24,
@@ -40,9 +60,21 @@ var Chart = (function() {
 
     var formatData = function () {
         return data.map(function (i) {
-            return { x: i.created_at, y: [i.open, i.high, i.low, i.close] }
+            return { x: i.created_at, y: [i.open, i.high, i.low, i.close], label: i.created_at }
         });
     };
+
+    var formatPriceLong = function(copper) {
+        var gold = CanvasJS.formatNumber(Math.floor(copper / 10000));
+
+        copper = copper % 10000
+
+        var silver = Math.floor(copper / 100) % 100;
+
+        copper = copper % 100;
+
+        return gold + " gold, " + silver + " silver, " + copper + " copper";
+    }
 
     var init = function () {
         if (itemId === null) return;
