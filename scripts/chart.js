@@ -45,11 +45,16 @@ var Chart = (function() {
                     }
                 },
                 axisX: {
-                    interval: 24,
+                    scaleBreaks: {
+                        autoCalculate: true,
+                        collapsibleThreshold: "10%"
+                    },
+                    interval: 8,
                     intervalType: "hour",
-                    valueFormatString: "MMM-DD",
-                    labelAngle: -45
+                    valueFormatString: "DD MMM H:mm",
+                    labelAngle: -45,
                 },
+                zoomEnabled: true,
                 data: [
                     {
                         type: "candlestick",

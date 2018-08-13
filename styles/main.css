@@ -6,13 +6,30 @@ form {
 }
 
 ul {
+  background-color: white;
   border: 1px solid black;
   display: none;
+  left: 5.1em;
   list-style: none;
   margin: 0 auto;
+  max-height: 15em;
+  overflow: auto;
+  overflow-x: hidden;
   padding-left: 0;
+  position: absolute;
   text-align: left;
   width: 11.2em;
+  z-index: 1;
+}
+
+li {
+  padding: 0.1em;
+}
+
+@media all and (min-width: 800px) {
+  ul {
+    left: 9.4em;
+  }
 }
 
 h1, h3 {
