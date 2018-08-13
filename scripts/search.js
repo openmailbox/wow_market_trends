@@ -12,6 +12,8 @@ var Search = (function() {
 
         if (data === null) return;
 
+        list.style.display = "inherit";
+
         for (var i = 0; i < data.length; i++) {
             var element = document.createElement("li");
             var link    = document.createElement("a");

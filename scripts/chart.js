@@ -29,7 +29,9 @@ var Chart = (function() {
                     }
                 },
                 title: {
-                    text: "Price History for " + itemName
+                    horizontalAlign: "left",
+                    padding: 20,
+                    text: itemName,
                 },
                 zoomEnabled: true,
                 axisY: {
