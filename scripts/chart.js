@@ -145,7 +145,7 @@ var Chart = (function() {
             var amount = formatPriceLong(auctions[0].bid);
 
             var price = {
-                text: string,
+                text: amount,
                 horizontalAlign: "left",
                 fontSize: 20,
                 padding: {
