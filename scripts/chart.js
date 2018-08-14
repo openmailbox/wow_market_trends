@@ -1,19 +1,30 @@
 var Chart = (function() {
-    var data     = [];
-    var chart    = null;
-    var itemId   = new URL(window.location.href).searchParams.get("itemId");
-    var itemName = null;
-    var auctions = [];
+    var data        = [];
+    var chart       = null;
+    var itemId      = new URL(window.location.href).searchParams.get("itemId");
+    var itemName    = null;
+    var iconUrl     = null;
+    var auctions    = [];
+    var baseIconUrl = "https://wow.zamimg.com/images/wow/icons/large/";
 
     var auctionsCallback = function(evt) {
-        auctions = JSON.parse(this.response);
+        var data = JSON.parse(this.response);
+
+        if (data === null) return;
+
         updateSubtitles();
     };
 
     var callback = function (evt) {
         data = JSON.parse(this.response, parseDate);
         itemName = data[0].name;
+        iconUrl = baseIconUrl + data[0].icon + ".jpg";
         drawChart();
+
+        //TODO: Something else
+        var element = document.createElement("img");
+        element.setAttribute("src", iconUrl);
+        document.querySelector("#chart-main").appendChild(element);
     };
 
     var drawChart = function() {
@@ -124,9 +135,14 @@ var Chart = (function() {
     }
 
     var updateSubtitles = function() {
-        if (chart !== null && auctions.length > 0) {
-            var string = formatPriceLong(auctions[0].bid);
-            var subtitle = {
+        if (chart === null) return;
+
+        var subtitles = [];
+
+        if (auctions.length > 0) {
+            var amount = formatPriceLong(auctions[0].bid);
+
+            var price = {
                 text: string,
                 horizontalAlign: "left",
                 fontSize: 20,
@@ -138,8 +154,12 @@ var Chart = (function() {
                 }
             };
 
-            chart.set("subtitles", [subtitle]);
+            subtitles.push(price);
         }
+
+        if (subtitles.length === 0) return;
+
+        chart.set("subtitles", subtitles);
     }
 
     return {

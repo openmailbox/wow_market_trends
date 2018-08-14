@@ -11,6 +11,7 @@ import (
 type item struct {
 	ItemID int    `json:"id"`
 	Name   string `json:"name"`
+	Icon   string `json:"icon"`
 }
 
 func updateItems(db *sql.DB) {
@@ -25,13 +26,13 @@ func updateItems(db *sql.DB) {
 	var nextID int
 	var nextItem item
 
-	db.QueryRow(`SELECT COUNT(1) FROM items WHERE name IS NULL`).Scan(&count)
-	log.Printf("Updating names for %v items.", count)
+	db.QueryRow(`SELECT COUNT(1) FROM items WHERE name IS NULL OR icon IS NULL`).Scan(&count)
+	log.Printf("Updating item data for %v items.", count)
 
-	rows, err := db.Query(`SELECT item_id FROM items WHERE name IS NULL`)
+	rows, err := db.Query(`SELECT item_id FROM items WHERE name IS NULL OR icon IS NULL`)
 	checkError(err)
 
-	stmt, err := db.Prepare(`UPDATE items SET name = $1 WHERE item_id = $2`)
+	stmt, err := db.Prepare(`UPDATE items SET name = $1, icon = $2 WHERE item_id = $3`)
 	checkError(err)
 
 	defer rows.Close()
@@ -45,7 +46,7 @@ func updateItems(db *sql.DB) {
 
 		json.NewDecoder(resp.Body).Decode(&nextItem)
 
-		_, err = stmt.Exec(nextItem.Name, nextItem.ItemID)
+		_, err = stmt.Exec(nextItem.Name, nextItem.Icon, nextItem.ItemID)
 		checkError(err)
 	}
 

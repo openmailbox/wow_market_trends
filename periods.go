@@ -11,6 +11,7 @@ import (
 type period struct {
 	ItemID    int       `json:"item_id"`
 	Name      string    `json:"name"`
+	Icon	  string    `json:"icon"`
 	High      int       `json:"high"`
 	Low       int       `json:"low"`
 	Volume    int       `json:"volume"`
