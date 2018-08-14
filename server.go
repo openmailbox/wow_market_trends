@@ -30,8 +30,6 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	enableCors(&w)
-
 	searchTerm := searchTermParam[0]
 
 	rows, err := db.Query(`SELECT item_id, name FROM items WHERE name ~* $1`, searchTerm)
@@ -66,8 +64,6 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	enableCors(&w)
-
 	// TODO: Filter out non-integer itemId param
 	lookupID := itemIDParam[0]
 
@@ -100,6 +96,55 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(periods)
+	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
+}
+
+func handleSummary(w http.ResponseWriter, r *http.Request) {
+	itemIDParam := r.URL.Query()["itemId"]
+
+	if len(itemIDParam) == 0 {
+		log.Printf("Completed %v %v\n", http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity))
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	// TODO: Filter out non-integer itemId param
+	lookupID := itemIDParam[0]
+
+	var bid, quantity int
+	var timeLeft string
+
+	rows, err := db.Query(`WITH a AS (select *,
+							CASE  
+							WHEN left(time_left,1) = 'S' THEN 1 
+							WHEN left(time_left,1) = 'M' THEN 2
+							WHEN left(time_left,1) = 'L' THEN 3
+							ELSE 4
+							END AS time_left2
+							FROM auctions
+							WHERE item_id = $1
+							LIMIT 50)
+							SELECT bid, quantity, time_left FROM a 
+							ORDER BY time_left2 LIMIT 2;`, lookupID)
+	checkError(err)
+
+	var auctions []auction
+	var nextAuction auction
+
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&bid, &quantity, &timeLeft)
+		checkError(err)
+
+		nextAuction.Bid = bid
+		nextAuction.Quantity = quantity
+		nextAuction.TimeLeft = timeLeft
+
+		auctions = append(auctions, nextAuction)
+	}
+
+	json.NewEncoder(w).Encode(auctions)
+
 	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
 }
 
@@ -139,6 +184,7 @@ func startServer(database *sql.DB) {
 	http.Handle("/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/history", handleHistory)
 	http.HandleFunc("/names", handleNameSearch)
+	http.HandleFunc("/summary", handleSummary)
 
 	fmt.Printf("Logging to %v\n", logFile)
 	log.Printf("Listening on %v\n", localAddress)

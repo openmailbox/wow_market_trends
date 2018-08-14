@@ -3,6 +3,12 @@ var Chart = (function() {
     var chart    = null;
     var itemId   = new URL(window.location.href).searchParams.get("itemId");
     var itemName = null;
+    var auctions = [];
+
+    var auctionsCallback = function(evt) {
+        auctions = JSON.parse(this.response);
+        updateSubtitles();
+    };
 
     var callback = function (evt) {
         data = JSON.parse(this.response, parseDate);
@@ -30,8 +36,14 @@ var Chart = (function() {
                 },
                 title: {
                     horizontalAlign: "left",
-                    padding: 20,
+                    padding: {
+                        top: 0,
+                        left: 20,
+                        right: 0,
+                        bottom: 0
+                    },
                     text: itemName,
+                    fontSize: 30
                 },
                 zoomEnabled: true,
                 axisY: {
@@ -62,6 +74,7 @@ var Chart = (function() {
                     }
                 ]
             });
+        updateSubtitles();
         chart.render();
     }
 
@@ -90,6 +103,11 @@ var Chart = (function() {
         oReq.addEventListener("load", callback);
         oReq.open("GET", "history?itemId=" + itemId);
         oReq.send();
+
+        var auctionsReq = new XMLHttpRequest();
+        auctionsReq.addEventListener("load", auctionsCallback);
+        auctionsReq.open("GET", "summary?itemId=" + itemId);
+        auctionsReq.send();
     };
 
     var parseDate = function (key, value) {
@@ -105,7 +123,27 @@ var Chart = (function() {
         return value;
     }
 
+    var updateSubtitles = function() {
+        if (chart !== null && auctions.length > 0) {
+            var string = formatPriceLong(auctions[0].bid);
+            var subtitle = {
+                text: string,
+                horizontalAlign: "left",
+                fontSize: 20,
+                padding: {
+                    top: 0,
+                    left: 20,
+                    right: 0,
+                    bottom: 10
+                }
+            };
+
+            chart.set("subtitles", [subtitle]);
+        }
+    }
+
     return {
+        getAuctions: function () { return auctions; },
         getChart: function () { return chart; },
         getData: function () { return data; },
         init: init

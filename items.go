@@ -50,7 +50,6 @@ func updateItems(db *sql.DB) {
 	}
 
 	_, err = stmt.Exec()
-	checkError(err)
 
 	err = stmt.Close()
 	checkError(err)
