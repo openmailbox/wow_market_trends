@@ -109,7 +109,8 @@ CREATE TABLE public.items (
     id integer NOT NULL,
     item_id integer,
     name character varying,
-    details json
+    details json,
+    icon character varying
 );
 
 
