@@ -12,6 +12,8 @@ var Chart = (function() {
 
         if (data === null) return;
 
+        auctions = data;
+
         updateSubtitles();
     };
 
