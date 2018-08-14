@@ -67,7 +67,7 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 	// TODO: Filter out non-integer itemId param
 	lookupID := itemIDParam[0]
 
-	rows, err := db.Query(`SELECT periods.item_id, name, isnull(icon, "noicon"), high, low, volume, open, close, created_at FROM periods
+	rows, err := db.Query(`SELECT periods.item_id, name, coalesce(icon, 'noicon'), high, low, volume, open, close, created_at FROM periods
 		INNER JOIN items on items.item_id = periods.item_id
 		WHERE periods.item_id = $1 ORDER BY periods.id DESC`, lookupID)
 	checkError(err)
