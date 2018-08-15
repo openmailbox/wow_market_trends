@@ -116,17 +116,17 @@ func handleSummary(w http.ResponseWriter, r *http.Request) {
 	var timeLeft string
 
 	rows, err := db.Query(`WITH a AS (select *,
-							CASE  
-							WHEN left(time_left,1) = 'S' THEN 1 
-							WHEN left(time_left,1) = 'M' THEN 2
-							WHEN left(time_left,1) = 'L' THEN 3
-							ELSE 4
-							END AS time_left2
-							FROM auctions
-							WHERE item_id = $1
-							LIMIT 50)
-							SELECT bid, quantity, time_left FROM a 
-							ORDER BY time_left2 LIMIT 2;`, lookupID)
+                            CASE  
+                            WHEN left(time_left,1) = 'S' THEN 1 
+                            WHEN left(time_left,1) = 'M' THEN 2
+                            WHEN left(time_left,1) = 'L' THEN 3
+                            ELSE 4
+                            END AS time_left2
+                            FROM auctions
+                            WHERE item_id = $1
+                            LIMIT 50)
+                            SELECT bid, quantity, time_left FROM a 
+                            ORDER BY time_left2 LIMIT 2;`, lookupID)
 	CheckError(err)
 
 	var auctions []auction
