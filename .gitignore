@@ -1,4 +1,4 @@
 .*.swp
 *.exe
-wowexchange
+cmd/wowexchange/wowexchange
 *.log
