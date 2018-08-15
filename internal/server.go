@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"database/sql"
@@ -13,7 +13,7 @@ import (
 )
 
 const localAddress = ":8081"
-const logFile = "log/server.log"
+const logFile = "../../log/server.log"
 
 var db *sql.DB
 
@@ -33,7 +33,7 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 	searchTerm := searchTermParam[0]
 
 	rows, err := db.Query(`SELECT item_id, name FROM items WHERE name ~* $1`, searchTerm)
-	checkError(err)
+	CheckError(err)
 
 	var nextItem item
 	var items []item
@@ -43,7 +43,7 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&itemID, &name)
-		checkError(err)
+		CheckError(err)
 
 		nextItem.ItemID = itemID
 		nextItem.Name = name
@@ -70,7 +70,7 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(`SELECT periods.item_id, name, coalesce(icon, 'noicon'), high, low, volume, open, close, created_at FROM periods
 		INNER JOIN items on items.item_id = periods.item_id
 		WHERE periods.item_id = $1 ORDER BY periods.id DESC`, lookupID)
-	checkError(err)
+	CheckError(err)
 
 	var periods []period
 	var itemID, high, low, volume, open, close int
@@ -81,7 +81,7 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&itemID, &name, &icon, &high, &low, &volume, &open, &close, &createdAt)
-		checkError(err)
+		CheckError(err)
 
 		nextPeriod.ItemID = itemID
 		nextPeriod.Name = name
@@ -127,7 +127,7 @@ func handleSummary(w http.ResponseWriter, r *http.Request) {
 							LIMIT 50)
 							SELECT bid, quantity, time_left FROM a 
 							ORDER BY time_left2 LIMIT 2;`, lookupID)
-	checkError(err)
+	CheckError(err)
 
 	var auctions []auction
 	var nextAuction auction
@@ -135,7 +135,7 @@ func handleSummary(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&bid, &quantity, &timeLeft)
-		checkError(err)
+		CheckError(err)
 
 		nextAuction.Bid = bid
 		nextAuction.Quantity = quantity
@@ -162,12 +162,12 @@ func openLogFile(fileName string) {
 	}
 
 	path, err := filepath.Abs(fileName)
-	checkError(err)
+	CheckError(err)
 
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0640)
 
 	if err != nil {
-		log.Fatal("Can't open log file.", err)
+		log.Fatal("Can't open log file.\n", err)
 	}
 
 	mw := io.MultiWriter(os.Stdout, file)
@@ -175,14 +175,15 @@ func openLogFile(fileName string) {
 	log.SetOutput(mw)
 }
 
-func startServer(database *sql.DB) {
+// StartServer starts the HTTP server on the local port
+func StartServer(database *sql.DB) {
 	db = database
 
 	openLogFile(logFile)
 
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	http.Handle("/", http.FileServer(http.Dir("./")))
+	http.Handle("/", http.FileServer(http.Dir("../../web/static")))
 	http.HandleFunc("/history", handleHistory)
 	http.HandleFunc("/names", handleNameSearch)
 	http.HandleFunc("/summary", handleSummary)
