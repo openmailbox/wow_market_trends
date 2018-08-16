@@ -1,28 +1,19 @@
 var Chart = (function() {
-    var data        = [];
-    var chart       = null;
-    var itemId      = new URL(window.location.href).searchParams.get("itemId");
-    var itemName    = null;
-    var iconUrl     = null;
-    var auctions    = [];
-    var baseIconUrl = "https://wow.zamimg.com/images/wow/icons/large/";
-    var maxVolume   = null;
-
-    var auctionsCallback = function(evt) {
-        var data = JSON.parse(this.response);
-
-        if (data === null) return;
-
-        auctions = data;
-
-        updateSubtitles();
-    };
+    var baseIconUrl  = "https://wow.zamimg.com/images/wow/icons/large/";
+    var chart        = null;
+    var currentPrice = null
+    var data         = null;
+    var iconUrl      = null;
+    var itemId       = new URL(window.location.href).searchParams.get("itemId");
+    var itemName     = null;
+    var maxVolume    = null;
 
     var callback = function (evt) {
         data = JSON.parse(this.response, parseDate);
-        itemName = data[0].name;
-        iconUrl = baseIconUrl + data[0].icon + ".jpg";
-        maxVolume = Math.max(...data.map(function(i) { return i.volume; }));
+        itemName = data.name;
+        iconUrl = baseIconUrl + data.icon + ".jpg";
+        maxVolume = Math.max(...data.periods.map(function(i) { return i.volume; }));
+        currentPrice = formatPriceLong(data.current);
         drawChart();
 
         //TODO: Something else
@@ -62,6 +53,19 @@ var Chart = (function() {
                     text: itemName,
                     fontSize: 30
                 },
+                subtitles: [
+                    {
+                        text: currentPrice,
+                        horizontalAlign: "left",
+                        fontSize: 20,
+                        padding: {
+                            top: 0,
+                            left: 20,
+                            right: 0,
+                            bottom: 10
+                        }
+                    }
+                ],
                 zoomEnabled: true,
                 axisY: {
                     includeZero: false,
@@ -101,18 +105,17 @@ var Chart = (function() {
                     }
                 ]
             });
-        updateSubtitles();
         chart.render();
     }
 
     var formatData = function () {
-        return data.map(function (i) {
+        return data.periods.map(function (i) {
             return { x: i.created_at, y: [i.open, i.high, i.low, i.close], label: i.created_at };
         });
     };
 
     var formatVolumeData = function() {
-        return data.map(function(i) {
+        return data.periods.map(function(i) {
             return { x: i.created_at, y: i.volume };
         });
     };
@@ -134,13 +137,8 @@ var Chart = (function() {
 
         var oReq = new XMLHttpRequest();
         oReq.addEventListener("load", callback);
-        oReq.open("GET", "history?itemId=" + itemId);
+        oReq.open("GET", "details?itemId=" + itemId);
         oReq.send();
-
-        var auctionsReq = new XMLHttpRequest();
-        auctionsReq.addEventListener("load", auctionsCallback);
-        auctionsReq.open("GET", "summary?itemId=" + itemId);
-        auctionsReq.send();
     };
 
     var parseDate = function (key, value) {
@@ -154,34 +152,6 @@ var Chart = (function() {
         }
 
         return value;
-    }
-
-    var updateSubtitles = function() {
-        if (chart === null) return;
-
-        var subtitles = [];
-
-        if (auctions.length > 0) {
-            var amount = formatPriceLong(auctions[0].bid);
-
-            var price = {
-                text: amount,
-                horizontalAlign: "left",
-                fontSize: 20,
-                padding: {
-                    top: 0,
-                    left: 20,
-                    right: 0,
-                    bottom: 10
-                }
-            };
-
-            subtitles.push(price);
-        }
-
-        if (subtitles.length === 0) return;
-
-        chart.set("subtitles", subtitles);
     }
 
     return {

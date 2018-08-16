@@ -9,16 +9,48 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
 const localAddress = ":8081"
 const logFile = "../../log/server.log"
 
+type itemDetails struct {
+	Name    string   `json:"name"`
+	Icon    string   `json:"icon"`
+	Periods []period `json:"periods"`
+	Current int      `json:"current"`
+}
+
 var db *sql.DB
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "https://wow.open-mailbox.com")
+}
+
+func handleDetails(w http.ResponseWriter, r *http.Request) {
+	itemIDParam := r.URL.Query()["itemId"]
+
+	if len(itemIDParam) == 0 {
+		log.Printf("Completed %v %v\n", http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity))
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	var details itemDetails
+
+	// TODO: Filter out non-integer itemId param
+	lookupID, err := strconv.Atoi(itemIDParam[0])
+	CheckError(err)
+
+	details.Periods = fetchItemHistory(lookupID)
+	details.Current = fetchCurentPrice(lookupID)
+	details.Name = details.Periods[0].Name
+	details.Icon = details.Periods[0].Icon
+
+	json.NewEncoder(w).Encode(details)
+	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
 }
 
 func handleNameSearch(w http.ResponseWriter, r *http.Request) {
@@ -55,18 +87,7 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
 }
 
-func handleHistory(w http.ResponseWriter, r *http.Request) {
-	itemIDParam := r.URL.Query()["itemId"]
-
-	if len(itemIDParam) == 0 {
-		log.Printf("Completed %v %v\n", http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity))
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		return
-	}
-
-	// TODO: Filter out non-integer itemId param
-	lookupID := itemIDParam[0]
-
+func fetchItemHistory(lookupID int) []period {
 	rows, err := db.Query(`SELECT periods.item_id, name, coalesce(icon, 'noicon'), high, low, volume, open, close, created_at FROM periods
 		INNER JOIN items on items.item_id = periods.item_id
 		WHERE periods.item_id = $1 ORDER BY periods.id DESC`, lookupID)
@@ -96,24 +117,11 @@ func handleHistory(w http.ResponseWriter, r *http.Request) {
 		periods = append(periods, nextPeriod)
 	}
 
-	json.NewEncoder(w).Encode(periods)
-	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
+	return periods;
 }
 
-func handleSummary(w http.ResponseWriter, r *http.Request) {
-	itemIDParam := r.URL.Query()["itemId"]
-
-	if len(itemIDParam) == 0 {
-		log.Printf("Completed %v %v\n", http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity))
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		return
-	}
-
-	// TODO: Filter out non-integer itemId param
-	lookupID := itemIDParam[0]
-
-	var bid, quantity int
-	var timeLeft string
+func fetchCurentPrice(lookupID int) int {
+	var bid int
 
 	rows, err := db.Query(`WITH a AS (select *,
                             CASE  
@@ -125,28 +133,17 @@ func handleSummary(w http.ResponseWriter, r *http.Request) {
                             FROM auctions
                             WHERE item_id = $1
                             LIMIT 50)
-                            SELECT bid, quantity, time_left FROM a 
-                            ORDER BY time_left2 LIMIT 2;`, lookupID)
+                            SELECT bid FROM a 
+                            ORDER BY time_left2 LIMIT 1;`, lookupID)
 	CheckError(err)
-
-	var auctions []auction
-	var nextAuction auction
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&bid, &quantity, &timeLeft)
+		err = rows.Scan(&bid)
 		CheckError(err)
-
-		nextAuction.Bid = bid
-		nextAuction.Quantity = quantity
-		nextAuction.TimeLeft = timeLeft
-
-		auctions = append(auctions, nextAuction)
 	}
 
-	json.NewEncoder(w).Encode(auctions)
-
-	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
+	return bid
 }
 
 func logRequest(handler http.Handler) http.Handler {
@@ -184,9 +181,8 @@ func StartServer(database *sql.DB) {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	http.Handle("/", http.FileServer(http.Dir("../../web/static")))
-	http.HandleFunc("/history", handleHistory)
 	http.HandleFunc("/names", handleNameSearch)
-	http.HandleFunc("/summary", handleSummary)
+	http.HandleFunc("/details", handleDetails)
 
 	fmt.Printf("Logging to %v\n", logFile)
 	log.Printf("Listening on %v\n", localAddress)
