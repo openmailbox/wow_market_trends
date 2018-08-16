@@ -145,7 +145,8 @@ CREATE TABLE public.periods (
     volume integer,
     open bigint,
     close bigint,
-    created_at timestamp with time zone
+    created_at timestamp with time zone,
+    ask bigint
 );
 
 
