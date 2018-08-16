@@ -6,6 +6,7 @@ var Chart = (function() {
     var iconUrl     = null;
     var auctions    = [];
     var baseIconUrl = "https://wow.zamimg.com/images/wow/icons/large/";
+    var maxVolume   = null;
 
     var auctionsCallback = function(evt) {
         var data = JSON.parse(this.response);
@@ -21,6 +22,7 @@ var Chart = (function() {
         data = JSON.parse(this.response, parseDate);
         itemName = data[0].name;
         iconUrl = baseIconUrl + data[0].icon + ".jpg";
+        maxVolume = Math.max(...data.map(function(i) { return i.volume; }));
         drawChart();
 
         //TODO: Something else
@@ -33,6 +35,7 @@ var Chart = (function() {
         chart = new CanvasJS.Chart("chartContainer",
             {
                 toolTip: {
+                    shared: true,
                     contentFormatter: function(e) {
                         var point = e.entries[0].dataPoint;
                         var str   = "";
@@ -42,7 +45,8 @@ var Chart = (function() {
                         str += "<strong>Open:</strong> " + formatPriceLong(point.y[0]) + "<br />";
                         str += "<strong>High:</strong> " + formatPriceLong(point.y[1]) + "<br />";
                         str += "<strong>Low:</strong> " + formatPriceLong(point.y[2]) + "<br />";
-                        str += "<strong>Close:</strong> " + formatPriceLong(point.y[3]);
+                        str += "<strong>Close:</strong> " + formatPriceLong(point.y[3]) + "<br />";
+                        str += "<strong>Volume:</strong> " + e.entries[1].dataPoint.y;
 
                         return str;
                     }
@@ -69,6 +73,11 @@ var Chart = (function() {
                         return e.value + "C";
                     }
                 },
+                axisY2: {
+                    title: "Volume",
+                    includeZero: true,
+                    maximum: 3 * maxVolume
+                },
                 axisX: {
                     scaleBreaks: {
                         autoCalculate: true,
@@ -84,6 +93,11 @@ var Chart = (function() {
                     {
                         type: "candlestick",
                         dataPoints: formatData()
+                    },
+                    {
+                        type: "line",
+                        axisYType: "secondary",
+                        dataPoints: formatVolumeData()
                     }
                 ]
             });
@@ -93,7 +107,13 @@ var Chart = (function() {
 
     var formatData = function () {
         return data.map(function (i) {
-            return { x: i.created_at, y: [i.open, i.high, i.low, i.close], label: i.created_at }
+            return { x: i.created_at, y: [i.open, i.high, i.low, i.close], label: i.created_at };
+        });
+    };
+
+    var formatVolumeData = function() {
+        return data.map(function(i) {
+            return { x: i.created_at, y: i.volume };
         });
     };
 
