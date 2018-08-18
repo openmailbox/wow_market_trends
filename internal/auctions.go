@@ -42,6 +42,8 @@ type auction struct {
 	Context    int    `json:"context"`
 }
 
+const realmName = "archimode";
+
 // RefreshAuctions pulls the latest auctions snapshot from dev.battle.net and stores it in PG
 func RefreshAuctions(db *sql.DB, apiKey string) {
 	var fileID int
@@ -123,7 +125,7 @@ func deleteExisting(db *sql.DB) {
 func fetchDumps(apiKey string) []auctionDumpFile {
 	log.Println("Fetching auction dump files...")
 
-	resp, err := http.Get("https://us.api.battle.net/wow/auction/data/archimonde?locale=en_US&apikey=" + apiKey)
+	resp, err := http.Get("https://us.api.battle.net/wow/auction/data/" + realmName + "?locale=en_US&apikey=" + apiKey)
 	CheckError(err)
 
 	var data auctionDumpResponse
