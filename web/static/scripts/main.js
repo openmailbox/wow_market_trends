@@ -1,4 +1,6 @@
-window.onload = function() {
-    Chart.init();
-    Search.init();
+var WowTrends = WowTrends || {};
+
+WowTrends.init = function() {
+    WowTrends.Chart.init();
+    WowTrends.Search.init();
 }

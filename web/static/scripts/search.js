@@ -1,4 +1,6 @@
-var Search = (function() {
+var WowTrends = WowTrends || {};
+
+WowTrends.Search = (function() {
     var timer = null;
 
     var callback = function(event) {

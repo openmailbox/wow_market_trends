@@ -1,71 +1,37 @@
-var Chart = (function() {
-    var baseIconUrl  = "https://wow.zamimg.com/images/wow/icons/large/";
-    var chart        = null;
-    var currentPrice = null
-    var data         = null;
-    var iconUrl      = null;
-    var itemId       = new URL(window.location.href).searchParams.get("itemId");
-    var itemName     = null;
-    var maxVolume    = null;
+var WowTrends = WowTrends || {};
+
+WowTrends.Chart = (function() {
+    var BASE_ICON_URL = "https://wow.zamimg.com/images/wow/icons/large/";
+    var _chart        = null;
+    var _data         = null;
+    var _iconUrl      = null;
+    var _itemId       = new URL(window.location.href).searchParams.get("itemId");
+    var _maxVolume    = null;
 
     var callback = function (evt) {
-        data = JSON.parse(this.response, parseDate);
-        itemName = data.name;
-        iconUrl = baseIconUrl + data.icon + ".jpg";
-        maxVolume = Math.max(...data.periods.map(function(i) { return i.volume; }));
-        currentPrice = formatPriceLong(data.current);
-        drawChart();
+        _data      = JSON.parse(this.response, parseDate);
+        _iconUrl   = BASE_ICON_URL + _data.icon + ".jpg";
+        _maxVolume = Math.max(..._data.periods.map(function(i) { return i.volume; }));
 
-        //TODO: Something else
+        draw();
+
+        // TODO: Better icon handling
         var element = document.createElement("img");
-        element.setAttribute("src", iconUrl);
+        element.setAttribute("src", _iconUrl);
         document.querySelector("#chart-main").appendChild(element);
     };
 
-    var drawChart = function() {
-        chart = new CanvasJS.Chart("chartContainer",
+    var draw = function() {
+        _chart = new CanvasJS.Chart("chart-container",
             {
-                toolTip: {
-                    shared: true,
-                    contentFormatter: function(e) {
-                        var point = e.entries[0].dataPoint;
-                        var str   = "";
-
-                        str += "<strong>" + point.label + "</strong>";
-                        str += "<br />";
-                        str += "<strong>Open:</strong> " + point.y[0] / 10000 + "G<br />";
-                        str += "<strong>High:</strong> " + point.y[1] / 10000 + "G<br />";
-                        str += "<strong>Low:</strong> " + point.y[2] / 10000 + "G<br />";
-                        str += "<strong>Close:</strong> " + point.y[3] / 10000 + "G<br />";
-                        str += "<strong>Volume:</strong> " + e.entries[1].dataPoint.y;
-
-                        return str;
-                    }
-                },
+                toolTip: WowTrends.Chart.toolTip,
                 title: {
                     horizontalAlign: "left",
-                    padding: {
-                        top: 0,
-                        left: 20,
-                        right: 0,
-                        bottom: 0
-                    },
-                    text: itemName,
+                    padding: { top: 0, left: 20, right: 0, bottom: 0 },
+                    text: _data.name,
                     fontSize: 30
                 },
-                subtitles: [
-                    {
-                        text: getSubtitle(),
-                        horizontalAlign: "left",
-                        fontSize: 20,
-                        padding: {
-                            top: 0,
-                            left: 20,
-                            right: 0,
-                            bottom: 10
-                        }
-                    }
-                ],
+                subtitles: WowTrends.Chart.subtitles.build(),
                 zoomEnabled: true,
                 axisY: {
                     includeZero: false,
@@ -80,7 +46,7 @@ var Chart = (function() {
                 axisY2: {
                     title: "Volume",
                     includeZero: true,
-                    maximum: 3 * maxVolume
+                    maximum: 3 * _maxVolume
                 },
                 axisX: {
                     scaleBreaks: {
@@ -105,21 +71,26 @@ var Chart = (function() {
                     }
                 ]
             });
-        chart.render();
+        _chart.render();
     }
 
     var formatData = function () {
-        return data.periods.map(function (i) {
+        return _data.periods.map(function (i) {
             return { x: i.created_at, y: [i.open, i.high, i.low, i.close], label: i.created_at };
         });
     };
 
     var formatVolumeData = function() {
-        return data.periods.map(function(i) {
+        return _data.periods.map(function(i) {
             return { x: i.created_at, y: i.volume };
         });
     };
 
+    /**
+     * Format a price as "X gold, Y silver, Z copper"
+     * @param {number} copper - The price in copper pieces.
+     * @returns {string}
+     */
     var formatPriceLong = function(copper) {
         var gold = CanvasJS.formatNumber(Math.floor(copper / 10000));
 
@@ -132,19 +103,12 @@ var Chart = (function() {
         return gold + " gold, " + silver + " silver, " + copper + " copper";
     };
 
-    var getSubtitle = function() {
-        var difference = data.periods[0].ask - data.periods[0].open;
-        var plusOrMinus = difference < 0 ? "" : "+";
-
-        return currentPrice + " (" + plusOrMinus + (difference / 10000) + "G)";
-    };
-
     var init = function () {
-        if (itemId === null) return;
+        if (_itemId === null) return;
 
         var oReq = new XMLHttpRequest();
         oReq.addEventListener("load", callback);
-        oReq.open("GET", "details?itemId=" + itemId);
+        oReq.open("GET", "details?itemId=" + _itemId);
         oReq.send();
     };
 
@@ -162,9 +126,9 @@ var Chart = (function() {
     }
 
     return {
-        getAuctions: function () { return auctions; },
-        getChart: function () { return chart; },
-        getData: function () { return data; },
+        formatPriceLong: formatPriceLong,
+        getChart: function () { return _chart; },
+        getData: function () { return _data; },
         init: init
     };
 })();
