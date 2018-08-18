@@ -45,7 +45,7 @@ func handleDetails(w http.ResponseWriter, r *http.Request) {
 	CheckError(err)
 
 	details.Periods = fetchItemHistory(lookupID)
-	details.Current = fetchCurentPrice(lookupID)
+	details.Current = details.Periods[0].Ask
 	details.Name = details.Periods[0].Name
 	details.Icon = details.Periods[0].Icon
 
@@ -88,20 +88,20 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 func fetchItemHistory(lookupID int) []period {
-	rows, err := db.Query(`SELECT periods.item_id, name, coalesce(icon, 'noicon'), high, low, volume, open, close, created_at FROM periods
+	rows, err := db.Query(`SELECT periods.item_id, name, coalesce(icon, 'noicon'), high, low, volume, open, close, created_at, coalesce(ask, 0) FROM periods
 		INNER JOIN items on items.item_id = periods.item_id
 		WHERE periods.item_id = $1 ORDER BY periods.id DESC`, lookupID)
 	CheckError(err)
 
 	var periods []period
-	var itemID, high, low, volume, open, close int
+	var itemID, high, low, volume, open, close, ask int
 	var name, icon string
 	var createdAt time.Time
 	var nextPeriod period
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&itemID, &name, &icon, &high, &low, &volume, &open, &close, &createdAt)
+		err = rows.Scan(&itemID, &name, &icon, &high, &low, &volume, &open, &close, &createdAt, &ask)
 		CheckError(err)
 
 		nextPeriod.ItemID = itemID
@@ -113,11 +113,12 @@ func fetchItemHistory(lookupID int) []period {
 		nextPeriod.Open = open
 		nextPeriod.Close = close
 		nextPeriod.CreatedAt = createdAt
+		nextPeriod.Ask = ask
 
 		periods = append(periods, nextPeriod)
 	}
 
-	return periods;
+	return periods
 }
 
 func fetchCurentPrice(lookupID int) int {

@@ -18,6 +18,7 @@ type period struct {
 	Open      int       `json:"open"`
 	Close     int       `json:"close"`
 	CreatedAt time.Time `json:"created_at"`
+	Ask       int       `json:"ask"`
 }
 
 // UpdatePeriods takes the current data in the auctions table and aggregates it into a time-period rollup per item
@@ -37,7 +38,7 @@ func UpdatePeriods(db *sql.DB) {
 	txn, err := db.Begin()
 	CheckError(err)
 
-	stmt, err := txn.Prepare(pq.CopyIn("periods", "item_id", "high", "low", "volume", "open", "close", "created_at"))
+	stmt, err := txn.Prepare(pq.CopyIn("periods", "item_id", "high", "low", "volume", "open", "close", "created_at", "ask"))
 	CheckError(err)
 
 	for rows.Next() {
@@ -46,10 +47,10 @@ func UpdatePeriods(db *sql.DB) {
 
 		p := period{ItemID: itemID, High: high, Low: low, Volume: volume, CreatedAt: timestamp}
 
-		p.Close = calculateClose(auctions, p.ItemID)
+		p.Close, p.Ask = calculateCloseAndAsk(auctions, p.ItemID)
 		p.Open = calculateOpen(lastPeriod, p.ItemID)
 
-		_, err = stmt.Exec(p.ItemID, p.High, p.Low, p.Volume, p.Open, p.Close, p.CreatedAt)
+		_, err = stmt.Exec(p.ItemID, p.High, p.Low, p.Volume, p.Open, p.Close, p.CreatedAt, p.Ask)
 		CheckError(err)
 	}
 
@@ -63,8 +64,9 @@ func UpdatePeriods(db *sql.DB) {
 	CheckError(err)
 }
 
-func calculateClose(auctions []auction, itemID int) int {
+func calculateCloseAndAsk(auctions []auction, itemID int) (int, int) {
 	var short, medium, long, veryLong []auction
+	var close, ask int
 
 	for _, auction := range auctions {
 		if auction.Item != itemID {
@@ -84,14 +86,20 @@ func calculateClose(auctions []auction, itemID int) int {
 	}
 
 	if len(short) > 0 {
-		return bidOverVolume(short)
+		close = bidOverVolume(short)
+		ask = findMinBid(short)
 	} else if len(medium) > 0 {
-		return bidOverVolume(medium)
+		close = bidOverVolume(medium)
+		ask = findMinBid(medium)
 	} else if len(long) > 0 {
-		return bidOverVolume(long)
+		close = bidOverVolume(long)
+		ask = findMinBid(long)
 	} else {
-		return bidOverVolume(veryLong)
+		close = bidOverVolume(veryLong)
+		ask = findMinBid(veryLong)
 	}
+
+	return close, ask
 }
 
 func calculateOpen(lastPeriod []period, itemID int) int {
@@ -118,6 +126,19 @@ func bidOverVolume(auctions []auction) int {
 	}
 
 	return totalBid / totalQuantity
+}
+
+func findMinBid(auctions []auction) int {
+	// TODO: use sort pkg
+	bid := auctions[0].Bid
+
+	for _, auction := range auctions {
+		if auction.Bid < bid {
+			bid = auction.Bid
+		}
+	}
+
+	return bid
 }
 
 func loadLastPeriod(db *sql.DB) []period {
