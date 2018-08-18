@@ -55,7 +55,7 @@ var Chart = (function() {
                 },
                 subtitles: [
                     {
-                        text: currentPrice,
+                        text: getSubtitle(),
                         horizontalAlign: "left",
                         fontSize: 20,
                         padding: {
@@ -130,7 +130,14 @@ var Chart = (function() {
         copper = copper % 100;
 
         return gold + " gold, " + silver + " silver, " + copper + " copper";
-    }
+    };
+
+    var getSubtitle = function() {
+        var difference = data.periods[0].ask - data.periods[0].open;
+        var plusOrMinus = difference < 0 ? "" : "+";
+
+        return currentPrice + " (" + plusOrMinus + (difference / 10000) + "G)";
+    };
 
     var init = function () {
         if (itemId === null) return;
