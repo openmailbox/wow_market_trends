@@ -33,10 +33,10 @@ var Chart = (function() {
 
                         str += "<strong>" + point.label + "</strong>";
                         str += "<br />";
-                        str += "<strong>Open:</strong> " + formatPriceLong(point.y[0]) + "<br />";
-                        str += "<strong>High:</strong> " + formatPriceLong(point.y[1]) + "<br />";
-                        str += "<strong>Low:</strong> " + formatPriceLong(point.y[2]) + "<br />";
-                        str += "<strong>Close:</strong> " + formatPriceLong(point.y[3]) + "<br />";
+                        str += "<strong>Open:</strong> " + point.y[0] / 10000 + "G<br />";
+                        str += "<strong>High:</strong> " + point.y[1] / 10000 + "G<br />";
+                        str += "<strong>Low:</strong> " + point.y[2] / 10000 + "G<br />";
+                        str += "<strong>Close:</strong> " + point.y[3] / 10000 + "G<br />";
                         str += "<strong>Volume:</strong> " + e.entries[1].dataPoint.y;
 
                         return str;
