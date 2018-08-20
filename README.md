@@ -12,7 +12,7 @@ Run `wowexchange` to import the latest snapshot of auction house data and create
 Change the constants in `server.go` for a different port or logging directory. Change the constant in `auctions.go` for a different WoW realm.
 
 ## Contributing
-1. Fork it ([http://github.com/openmailbox/wow_market_trends/form](http://github.com/openmailbox/wow_market_trends/form))
+1. Fork it ([http://github.com/openmailbox/wow_market_trends/form](http://github.com/openmailbox/wow_market_trends/fork))
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)

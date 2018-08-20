@@ -42,7 +42,7 @@ type auction struct {
 	Context    int    `json:"context"`
 }
 
-const realmName = "archimode";
+const realmName = "archimonde"
 
 // RefreshAuctions pulls the latest auctions snapshot from dev.battle.net and stores it in PG
 func RefreshAuctions(db *sql.DB, apiKey string) {
