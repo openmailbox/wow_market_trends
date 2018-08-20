@@ -15,10 +15,13 @@ WowTrends.Chart = (function() {
 
         draw();
 
-        // TODO: Better icon handling
         var element = document.createElement("img");
+        var parent  = document.querySelector("#chart-main");
+        var sibling = document.querySelector("#chart-container");
+
         element.setAttribute("src", _iconUrl);
-        document.querySelector("#chart-main").appendChild(element);
+        element.classList.add("chart-icon");
+        parent.insertBefore(element, sibling);
     };
 
     var draw = function() {
