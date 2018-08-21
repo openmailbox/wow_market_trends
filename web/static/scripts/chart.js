@@ -56,9 +56,9 @@ WowTrends.Chart = (function() {
                         autoCalculate: true,
                         collapsibleThreshold: "10%"
                     },
-                    interval: 8,
+                    interval: 24,
                     intervalType: "hour",
-                    valueFormatString: "DD MMM H:mm",
+                    valueFormatString: "DD MMM",
                     labelAngle: -45,
                 },
                 zoomEnabled: true,
