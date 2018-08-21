@@ -8,8 +8,6 @@ WowTrends.Chart.subtitles = (function() {
         var percentage  = ((difference / data.periods[0].ask) * 100).toFixed(1);
         var text        = WowTrends.Chart.formatPriceLong(data.current) + " (" + plusOrMinus + (difference / 10000) + "G / " + percentage + "%)";
 
-        // TODO: Use difference / ask to show percent change
-
         return {
             text: text,
             horizontalAlign: "left",

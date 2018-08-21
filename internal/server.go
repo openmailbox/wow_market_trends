@@ -64,7 +64,7 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 
 	searchTerm := searchTermParam[0]
 
-	rows, err := db.Query(`SELECT item_id, name FROM items WHERE name ~* $1`, searchTerm)
+	rows, err := db.Query(`SELECT item_id, name FROM items WHERE name ~* $1 ORDER BY name`, searchTerm)
 	CheckError(err)
 
 	var nextItem item

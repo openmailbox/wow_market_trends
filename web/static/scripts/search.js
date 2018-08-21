@@ -12,21 +12,34 @@ WowTrends.Search = (function() {
             list.firstChild.remove();
         }
 
-        if (data === null) return;
+        if (data === null) {
+            hideSpinner();
+            return;
+        }
 
         list.style.display = "inherit";
 
         for (var i = 0; i < data.length; i++) {
             var element = document.createElement("li");
             var link    = document.createElement("a");
+            var content = document.createElement("div");
 
+            element.classList.add("menu-item");
             link.setAttribute("href", "?itemId=" + data[i].id);
-            link.textContent = data[i].name;
+            content.classList.add("tile", "tile-centered")
+            content.textContent = data[i].name;
 
+            link.appendChild(content);
             element.appendChild(link);
             list.appendChild(element);
         }
+
+        hideSpinner();
     };
+
+    var hideSpinner = function() {
+        document.querySelector(".form-icon").classList.remove("loading");
+    }
 
     var init = function() {
         var textField = document.querySelector('#search-text')
@@ -35,6 +48,8 @@ WowTrends.Search = (function() {
             event.preventDefault();
 
             if (timer) clearTimeout(timer);
+
+            document.querySelector(".form-icon").classList.add("loading");
 
             // TODO: Trigger sendQuery on page load if text is in the input? Or on focus?
             timer = setTimeout(sendQuery, 1000);
@@ -45,7 +60,10 @@ WowTrends.Search = (function() {
         timer = null;
         var query = document.querySelector("#search-text").value;
 
-        if (query.length < 3) return;
+        if (query.length < 3) {
+            hideSpinner();
+            return;
+        }
 
         var oReq = new XMLHttpRequest();
         oReq.addEventListener("load", callback);

@@ -1,59 +1,6 @@
-form {
-  margin: 0 auto;
-  max-width: 30em;
-  position: relative;
-  text-align: center;
-}
-
-ul {
-  background-color: white;
-  border: 1px solid black;
-  display: none;
-  left: 5.1em;
-  list-style: none;
-  margin: 0 auto;
-  max-height: 15em;
-  overflow: auto;
-  overflow-x: hidden;
-  padding-left: 0;
-  position: absolute;
-  text-align: left;
-  width: 11.2em;
-  z-index: 1;
-}
-
-li {
-  padding: 0.1em;
-}
-
-@media all and (min-width: 800px) {
-  ul {
-    left: 9.4em;
-  }
-}
-
-h1, h3 {
-  text-align: center;
-}
-
-h1 {
-  margin-bottom: 0;
-}
-
-h3 {
-  margin-bottom: 1.5em;
-  margin-top: 0;
-}
-
-#search-text {
-  padding: 0.3em;
-}
-
-#chart-main {
-  margin: 0 auto;
-  max-width: 90em;
-}
-
-.chart-icon {
-  margin-left: 1.7em;
+#search-results {
+    display: none;
+    max-height: 15em;
+    overflow: auto;
+    overflow-x: hidden;
 }
