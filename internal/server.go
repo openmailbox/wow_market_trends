@@ -88,6 +88,7 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 func fetchItemHistory(lookupID int) []period {
+	// TODO: Still something weird with the CTE and last_value grab.
 	rows, err := db.Query(`WITH hourly as (
 							select CAST($1 AS int) as item_id,
 								created_at::date as day,
@@ -104,19 +105,19 @@ func fetchItemHistory(lookupID int) []period {
 								window w as (partition by periods.created_at::date order by periods.created_at)
 								order by periods.created_at desc
 							)
-							SELECT hourly.item_id, 
-								name,
-								COALESCE(icon, 'noicon') as icon,
-								max(high) as high, 
-								min(low) as low, 
-								sum(volume) as volume, 
-								first_open as open, 
-								last_close as close, 
-								day as created_at, 
-								MIN(COALESCE(ask, 0)) as ask 
+							SELECT min(hourly.item_id),
+								min(name),
+								min(COALESCE(icon, 'noicon')) as icon,
+								max(high) as high,
+								min(low) as low,
+								sum(volume) as volume,
+								min(first_open) as open,
+								max(last_close) as close,
+								day as created_at,
+								MIN(COALESCE(ask, 0)) as ask
 								FROM hourly
 								INNER JOIN items ON items.item_id = hourly.item_id
-								GROUP BY day, first_open, last_close, hourly.item_id, name, icon
+								GROUP BY day
 								ORDER BY day desc`, lookupID)
 	CheckError(err)
 
@@ -152,8 +153,8 @@ func fetchCurentPrice(lookupID int) int {
 	var bid int
 
 	rows, err := db.Query(`WITH a AS (select *,
-                            CASE  
-                            WHEN left(time_left,1) = 'S' THEN 1 
+                            CASE
+                            WHEN left(time_left,1) = 'S' THEN 1
                             WHEN left(time_left,1) = 'M' THEN 2
                             WHEN left(time_left,1) = 'L' THEN 3
                             ELSE 4
@@ -161,7 +162,7 @@ func fetchCurentPrice(lookupID int) int {
                             FROM auctions
                             WHERE item_id = $1
                             LIMIT 50)
-                            SELECT bid FROM a 
+                            SELECT bid FROM a
                             ORDER BY time_left2 LIMIT 1;`, lookupID)
 	CheckError(err)
 
