@@ -88,36 +88,35 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 func fetchItemHistory(lookupID int) []period {
-	// TODO: Still something weird with the CTE and last_value grab.
 	rows, err := db.Query(`WITH hourly as (
 							select CAST($1 AS int) as item_id,
 								created_at::date as day,
 								created_at,
 								open,
-								first_value(open) over w as first_open,
-								last_value(close) over w as last_close,
+								first_value(open) over (partition by created_at::date order by created_at) as first_open,
+								close,
+								first_value(close) over (partition by created_at::date order by created_at desc) as last_close,
 								high,
 								low,
 								volume,
 								ask
 								FROM periods
 								WHERE periods.item_id = $1
-								window w as (partition by periods.created_at::date order by periods.created_at)
 								order by periods.created_at desc
 							)
-							SELECT min(hourly.item_id),
-								min(name),
-								min(COALESCE(icon, 'noicon')) as icon,
+							SELECT hourly.item_id,
+								name,
+								COALESCE(icon, 'noicon') as icon,
 								max(high) as high,
 								min(low) as low,
 								sum(volume) as volume,
-								min(first_open) as open,
-								max(last_close) as close,
+								first_open as open,
+								last_close as close,
 								day as created_at,
 								MIN(COALESCE(ask, 0)) as ask
 								FROM hourly
 								INNER JOIN items ON items.item_id = hourly.item_id
-								GROUP BY day
+								GROUP BY day, icon, hourly.item_id, name, first_open, last_close
 								ORDER BY day desc`, lookupID)
 	CheckError(err)
 
