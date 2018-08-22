@@ -1,53 +1,51 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="HandheldFreindly" content="true" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="HandheldFreindly" content="true" />
 
-  <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
-  <link rel="stylesheet" type="text/css" href="styles/main.css" />
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" type="text/css" href="styles/main.css" />
 
-  <title>WoW Market Trends - Auction House Price Tracking</title>
-</head>
+    <title>WoW Market Trends - Auction House Price Tracking</title>
+  </head>
 
-<body onload="WowTrends.init();">
-  <div class="container">
+  <body onload="WowTrends.init();">
     <header class="navbar">
       <section class="navbar-section">
-        <a href="#" class="navbar-brand mr-2">WoW Market Trends</a>
+        <a href="/" class="navbar-brand mr-2">WoW Market Trends</a>
         <a href="https://github.com/openmailbox/wow_market_trends" target="_blank" class="btn btn-link">GitHub</a>
       </section>
     </header>
 
-    <div id="chart-main">
-      <div id="chart-container"></div>
-    </div>
-
-    <div class="columns">
-      <div class="column col-4"></div>
-      <div class="column col-4 form-autocomplete">
-        <div class="form-autocomplete-input form-input">
+    <div class="container">
+      <div class="columns">
+        <div class="column col-sm-1 col-4"></div>
+        <div class="form-autocomplete form-group column">
           <div class="has-icon-left">
-            <input id="search-text" class="form-input" type="text" placeholder="Search for items" autofocus />
+            <input class="form-input" type="text" id="search-text" placeholder="Search for items" autofocus />
             <i class="form-icon"></i>
+            <ul id="search-results" class="menu">
           </div>
-          <ul id="search-results" class="menu">
           </ul>
         </div>
+        <div class="column col-sm-1 col-4"></div>
       </div>
-      <div class="column col-4"></div>
+
+      <div id="chart-main" class="columns">
+        <div id="chart-container" class="column col-12"></div>
+      </div>
     </div>
-  </div>
-  
-  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-  <script src="scripts/search.js"></script>
-  <script src="scripts/main.js"></script>
-  
-  <script src="scripts/chart.js"></script>
-  <script src="scripts/chart/subtitles.js"></script>
-  <script src="scripts/chart/tool_tip.js"></script>
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="scripts/search.js"></script>
+    <script src="scripts/main.js"></script>
+
+    <script src="scripts/chart.js"></script>
+    <script src="scripts/chart/subtitles.js"></script>
+    <script src="scripts/chart/tool_tip.js"></script>
   </body>
-  
-  </html>
+
+</html>

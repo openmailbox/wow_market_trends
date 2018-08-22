@@ -1,6 +1,25 @@
+header {
+  margin-bottom: 1em;
+}
+
+.chart-icon {
+  margin-left: 2em;
+}
+
+#chart-container {
+  height: 300px;
+  width: 100%;
+}
+
+#chart-main {
+  margin-top: 1em;
+}
+
 #search-results {
     display: none;
     max-height: 15em;
     overflow: auto;
     overflow-x: hidden;
+    position: absolute;
+    width: 100%;
 }
