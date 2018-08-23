@@ -64,21 +64,22 @@ func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 
 	searchTerm := searchTermParam[0]
 
-	rows, err := db.Query(`SELECT item_id, name FROM items WHERE name ~* $1 ORDER BY name`, searchTerm)
+	rows, err := db.Query(`SELECT item_id, name, icon FROM items WHERE name ~* $1 ORDER BY name LIMIT 25`, searchTerm)
 	CheckError(err)
 
 	var nextItem item
 	var items []item
 	var itemID int
-	var name string
+	var name, icon string
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&itemID, &name)
+		err = rows.Scan(&itemID, &name, &icon)
 		CheckError(err)
 
 		nextItem.ItemID = itemID
 		nextItem.Name = name
+		nextItem.Icon = icon
 
 		items = append(items, nextItem)
 	}

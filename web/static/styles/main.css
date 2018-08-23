@@ -24,6 +24,14 @@ header {
     width: 100%;
 }
 
+#search-results img {
+  width: 2em;
+}
+
+#search-results p {
+  margin: 0;
+}
+
 #title-block {
   margin: 2em 0 3em 0;
   text-align: center;

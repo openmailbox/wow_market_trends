@@ -1,6 +1,7 @@
 var WowTrends = WowTrends || {};
 
 WowTrends.Search = (function() {
+    var BASE_ICON_URL = "https://wow.zamimg.com/images/wow/icons/large/";
     var timer = null;
 
     var callback = function(event) {
@@ -20,18 +21,26 @@ WowTrends.Search = (function() {
         list.style.display = "inherit";
 
         for (var i = 0; i < data.length; i++) {
-            var element = document.createElement("li");
-            var link    = document.createElement("a");
-            var content = document.createElement("div");
+            var element        = document.createElement("li");
+            var link           = document.createElement("a");
+            var contentWrapper = document.createElement("div");
+            var contentImage   = document.createElement("img");
+            var contentText    = document.createElement("p");
 
             element.classList.add("menu-item");
             link.setAttribute("href", "history.html?itemId=" + data[i].id);
-            content.classList.add("tile", "tile-centered")
-            content.textContent = data[i].name;
+            contentWrapper.classList.add("tile", "tile-centered")
+            contentImage.setAttribute("src", BASE_ICON_URL + data[i].icon + ".jpg");
+            contentImage.classList.add("tile-icon");
+            contentText.classList.add("tile-content");
+            contentText.textContent = data[i].name;
 
-            link.appendChild(content);
+            contentWrapper.appendChild(contentImage);
+            contentWrapper.appendChild(contentText);
+            link.appendChild(contentWrapper);
             element.appendChild(link);
             list.appendChild(element);
+            element.appendChild(link);
         }
 
         hideSpinner();
