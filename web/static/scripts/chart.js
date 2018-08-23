@@ -32,7 +32,9 @@ WowTrends.Chart = (function() {
                     horizontalAlign: "left",
                     padding: { top: 0, left: 20, right: 0, bottom: 0 },
                     text: _data.name,
-                    fontSize: 30
+                    fontFamily: 'Segoe UI, Roboto, Helvetica Neue, sans-serif',
+                    fontSize: 30,
+                    fontWeight: "bold"
                 },
                 subtitles: WowTrends.Chart.subtitles.build(),
                 zoomEnabled: true,
@@ -135,3 +137,7 @@ WowTrends.Chart = (function() {
         init: init
     };
 })();
+
+window.addEventListener("load", function() {
+    WowTrends.Chart.init();
+});

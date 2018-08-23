@@ -11,6 +11,7 @@ WowTrends.Chart.subtitles = (function() {
         return {
             text: text,
             horizontalAlign: "left",
+            fontFamily: 'Segoe UI, Roboto, Helvetica Neue, sans-serif',
             fontSize: 20,
             padding: { top: 0, left: 20, right: 0, bottom: 10 }
         };

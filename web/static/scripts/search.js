@@ -25,7 +25,7 @@ WowTrends.Search = (function() {
             var content = document.createElement("div");
 
             element.classList.add("menu-item");
-            link.setAttribute("href", "?itemId=" + data[i].id);
+            link.setAttribute("href", "history.html?itemId=" + data[i].id);
             content.classList.add("tile", "tile-centered")
             content.textContent = data[i].name;
 
@@ -76,3 +76,7 @@ WowTrends.Search = (function() {
         getTimer: function() { return timer; }
     };
 })();
+
+window.addEventListener("load", function() {
+    WowTrends.Search.init();
+});
