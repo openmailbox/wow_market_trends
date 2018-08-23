@@ -70,6 +70,7 @@ WowTrends.Search = (function() {
         var query = document.querySelector("#search-text").value;
 
         if (query.length < 3) {
+            document.querySelector("#search-results").style.display = "none";
             hideSpinner();
             return;
         }
