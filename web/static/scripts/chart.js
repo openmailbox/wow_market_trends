@@ -22,6 +22,8 @@ WowTrends.Chart = (function() {
         element.setAttribute("src", _iconUrl);
         element.classList.add("chart-icon");
         parent.insertBefore(element, sibling);
+
+        populateTableData();
     };
 
     var draw = function() {
@@ -129,6 +131,13 @@ WowTrends.Chart = (function() {
 
         return value;
     }
+
+    var populateTableData = function() {
+        document.getElementById("data-table-open").innerText = _data.periods[0].open / 10000 + "G";
+        document.getElementById("data-table-close").innerText = _data.periods[0].close / 10000 + "G";
+        document.getElementById("data-table-high").innerText = _data.periods[0].high / 10000 + "G";
+        document.getElementById("data-table-low").innerText = _data.periods[0].low / 10000 + "G";
+    };
 
     return {
         formatPriceLong: formatPriceLong,
