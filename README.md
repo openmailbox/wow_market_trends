@@ -1,13 +1,19 @@
 # World of Warcraft Market Trends
-A web application plus a collection of tools for importing WoW auction house data and tracking price trends.
+A web application plus a collection of tools for importing World of Warcraft auction house data and tracking price trends. See a live demo at [https://wow.open-mailbox.com/](https://wow.open-mailbox.com/).
+
+## Dependencies
+* [Go](https://golang.org/) (tested on 1.9)
+* [PostgreSQL](https://www.postgresql.org/) (tested on 9.5)
+
 ## Development
 1. `git clone`
-2. `cd wow_market_trends/internal && go build`
-3. `cd wow_market_trends/cmd/wowexchange && go build`
+2. `cd wow_market_trends`
+3. `make`
+4 `cd cmd/wowexchange`
+4. `./wowexchange` to fetch the latest auction house snapshot
+5. `./wowexchange serve` to start a webserver locally on port 8081.
 
 In order to fetch the latest auction house snapshot data, a Blizzard API key is required. You can obtain one by registering a free account at the [Blizzard Devloper Portal](https://dev.battle.net/). Set the `BLIZZARD_API_KEY` in your environment using the obtained key.
-
-Run `wowexchange` to import the latest snapshot of auction house data and create the current price data for all unique items. Run `wowexchange serve` to start the web server on localhost port 8081. 
 
 Change the constants in `server.go` for a different port or logging directory. Change the constant in `auctions.go` for a different WoW realm.
 
