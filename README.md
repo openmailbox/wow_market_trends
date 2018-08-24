@@ -10,8 +10,8 @@ A web application plus a collection of tools for importing World of Warcraft auc
 2. `cd wow_market_trends`
 3. `make`
 4 `cd cmd/wowexchange`
-4. `./wowexchange` to fetch the latest auction house snapshot
-5. `./wowexchange serve` to start a webserver locally on port 8081.
+5. `./wowexchange` to fetch the latest auction house snapshot
+6. `./wowexchange serve` to start a webserver locally on port 8081.
 
 In order to fetch the latest auction house snapshot data, a Blizzard API key is required. You can obtain one by registering a free account at the [Blizzard Devloper Portal](https://dev.battle.net/). Set the `BLIZZARD_API_KEY` in your environment using the obtained key.
 
