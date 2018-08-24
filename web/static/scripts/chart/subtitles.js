@@ -9,6 +9,7 @@ WowTrends.Chart.subtitles = (function() {
         var text        = WowTrends.Chart.formatPriceLong(data.current) + " (" + plusOrMinus + (difference / 10000) + "G / " + percentage + "%)";
 
         return {
+            fontColor: "#454d5d",
             text: text,
             horizontalAlign: "left",
             fontFamily: 'Segoe UI, Roboto, Helvetica Neue, sans-serif',

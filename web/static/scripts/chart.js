@@ -29,8 +29,10 @@ WowTrends.Chart = (function() {
     var draw = function() {
         _chart = new CanvasJS.Chart("chart-container",
             {
+                colorSet: "spectreColorSet",
                 toolTip: WowTrends.Chart.toolTip,
                 title: {
+                    fontColor: "#454d5d",
                     horizontalAlign: "left",
                     padding: { top: 0, left: 20, right: 0, bottom: 0 },
                     text: _data.name,
@@ -150,3 +152,19 @@ WowTrends.Chart = (function() {
 window.addEventListener("load", function() {
     WowTrends.Chart.init();
 });
+
+CanvasJS.addColorSet("spectreColorSet", 
+                     [
+                       "#5755d9",
+                       "#32b643",
+                       "#f1f1fc",
+                       "#e85600",
+                       "#ffb700",
+                       "#454d5d",
+                       "#727e96",
+                       "#acb3c2",
+                       "#e7e9ed",
+                       "#f0f1f4",
+                       "#f8f9fa",
+                       "#fff"
+                     ]);
