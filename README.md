@@ -9,7 +9,7 @@ A web application plus a collection of tools for importing World of Warcraft auc
 1. `git clone`
 2. `cd wow_market_trends`
 3. `make`
-4 `cd cmd/wowexchange`
+4. `cd cmd/wowexchange`
 5. `./wowexchange` to fetch the latest auction house snapshot
 6. `./wowexchange serve` to start a webserver locally on port 8081.
 
