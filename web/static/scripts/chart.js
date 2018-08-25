@@ -46,11 +46,7 @@ WowTrends.Chart = (function() {
                     includeZero: false,
                     title: "Price",
                     prefix: "",
-                    labelFormatter: function(e) {
-                        if (e.value > 10000) return CanvasJS.formatNumber(Math.floor(e.value / 10000)) + "G";
-                        if (e.value > 100) return Math.floor(e.value / 100) + "S";
-                        return e.value + "C";
-                    }
+                    labelFormatter: function(e) { return formatPrice(e.value); }
                 },
                 axisY2: {
                     title: "Volume",
@@ -95,6 +91,12 @@ WowTrends.Chart = (function() {
         });
     };
 
+    var formatPrice = function(copper) {
+        if (copper > 10000) return CanvasJS.formatNumber(Math.floor(copper / 10000)) + "G";
+        if (copper > 100) return Math.floor(copper / 100) + "S";
+        return copper + "C";
+    }
+
     /**
      * Format a price as "X gold, Y silver, Z copper"
      * @param {number} copper - The price in copper pieces.
@@ -135,10 +137,15 @@ WowTrends.Chart = (function() {
     }
 
     var populateTableData = function() {
-        document.getElementById("data-table-open").innerText = _data.periods[0].open / 10000 + "G";
-        document.getElementById("data-table-close").innerText = _data.periods[0].close / 10000 + "G";
-        document.getElementById("data-table-high").innerText = _data.periods[0].high / 10000 + "G";
-        document.getElementById("data-table-low").innerText = _data.periods[0].low / 10000 + "G";
+        var highFourteen = Math.max(..._data.periods.slice(0,14).map(function(i) { return i.high }));
+        var lowFourteen = Math.max(..._data.periods.slice(0,14).map(function(i) { return i.low }));
+
+        document.getElementById("data-table-open").innerText = formatPrice(_data.periods[0].open);
+        document.getElementById("data-table-close").innerText = formatPrice(_data.periods[0].close);
+        document.getElementById("data-table-high").innerText = formatPrice(_data.periods[0].high);
+        document.getElementById("data-table-low").innerText = formatPrice(_data.periods[0].low);
+        document.getElementById("data-table-high-14").innerText = formatPrice(highFourteen);
+        document.getElementById("data-table-low-14").innerText = formatPrice(lowFourteen);
     };
 
     return {
