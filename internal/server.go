@@ -114,22 +114,25 @@ func fetchItemHistory(lookupID int) []period {
 								first_open as open,
 								last_close as close,
 								day as created_at,
-								MIN(COALESCE(ask, 0)) as ask
+								MIN(COALESCE(ask, 0)) as ask,
+                                avg(round(min(COALESCE(hourly.last_close, 0)))) OVER (order by day desc rows between 6 preceding and current row) as average
 								FROM hourly
 								INNER JOIN items ON items.item_id = hourly.item_id
 								GROUP BY day, icon, hourly.item_id, name, first_open, last_close
-								ORDER BY day desc`, lookupID)
+								ORDER BY day desc
+                                LIMIT 14`, lookupID)
 	CheckError(err)
 
 	var periods []period
 	var itemID, high, low, volume, open, close, ask int
+	var average float64
 	var name, icon string
 	var createdAt time.Time
 	var nextPeriod period
 
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&itemID, &name, &icon, &high, &low, &volume, &open, &close, &createdAt, &ask)
+		err = rows.Scan(&itemID, &name, &icon, &high, &low, &volume, &open, &close, &createdAt, &ask, &average)
 		CheckError(err)
 
 		nextPeriod.ItemID = itemID
@@ -142,6 +145,7 @@ func fetchItemHistory(lookupID int) []period {
 		nextPeriod.Close = close
 		nextPeriod.CreatedAt = createdAt
 		nextPeriod.Ask = ask
+		nextPeriod.Average = int(average)
 
 		periods = append(periods, nextPeriod)
 	}

@@ -73,6 +73,11 @@ WowTrends.Chart = (function() {
                         type: "line",
                         axisYType: "secondary",
                         dataPoints: formatVolumeData()
+                    },
+                    {
+                        type: "line",
+                        axisYType: "primary",
+                        dataPoints: formatAverageData()
                     }
                 ]
             });
@@ -82,6 +87,12 @@ WowTrends.Chart = (function() {
     var formatData = function () {
         return _data.periods.map(function (i) {
             return { x: i.created_at, y: [i.open, i.high, i.low, i.close], label: i.created_at };
+        });
+    };
+
+    var formatAverageData = function() {
+        return _data.periods.map(function(i) {
+            return { x: i.created_at, y: i.average }
         });
     };
 
@@ -164,9 +175,9 @@ CanvasJS.addColorSet("spectreColorSet",
                      [
                        "#5755d9",
                        "#32b643",
+                       "#ffb700",
                        "#f1f1fc",
                        "#e85600",
-                       "#ffb700",
                        "#454d5d",
                        "#727e96",
                        "#acb3c2",

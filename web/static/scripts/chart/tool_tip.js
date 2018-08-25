@@ -16,7 +16,8 @@ WowTrends.Chart.toolTip = (function() {
         str += "<strong>High:</strong> " + point.y[1] / 10000 + "G<br />";
         str += "<strong>Low:</strong> " + point.y[2] / 10000 + "G<br />";
         str += "<strong>Close:</strong> " + point.y[3] / 10000 + "G<br />";
-        str += "<strong>Volume:</strong> " + event.entries[1].dataPoint.y;
+        str += "<strong>Volume:</strong> " + event.entries[1].dataPoint.y + "G<br />";
+        str += "<strong>7-Day Avg:</strong> " + event.entries[2].dataPoint.y / 10000 + "G";
 
         return str;
     }

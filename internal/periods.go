@@ -19,6 +19,7 @@ type period struct {
 	Close     int       `json:"close"`
 	CreatedAt time.Time `json:"created_at"`
 	Ask       int       `json:"ask"`
+	Average   int       `json:"average"` // 7-day simple moving average
 }
 
 // UpdatePeriods takes the current data in the auctions table and aggregates it into a time-period rollup per item
