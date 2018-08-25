@@ -1,6 +1,4 @@
-var WowTrends = WowTrends || {};
-
-WowTrends.Chart = (function() {
+export default function() {
     var BASE_ICON_URL = "https://wow.zamimg.com/images/wow/icons/large/";
     var _chart        = null;
     var _data         = null;
@@ -165,24 +163,4 @@ WowTrends.Chart = (function() {
         getData: function () { return _data; },
         init: init
     };
-})();
-
-window.addEventListener("load", function() {
-    WowTrends.Chart.init();
-});
-
-CanvasJS.addColorSet("spectreColorSet", 
-                     [
-                       "#5755d9",
-                       "#32b643",
-                       "#ffb700",
-                       "#f1f1fc",
-                       "#e85600",
-                       "#454d5d",
-                       "#727e96",
-                       "#acb3c2",
-                       "#e7e9ed",
-                       "#f0f1f4",
-                       "#f8f9fa",
-                       "#fff"
-                     ]);
+};

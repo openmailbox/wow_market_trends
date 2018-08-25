@@ -1,12 +1,9 @@
-var WowTrends = WowTrends || {};
-
-WowTrends.Search = (function() {
+export default function() {
     var BASE_ICON_URL = "https://wow.zamimg.com/images/wow/icons/large/";
     var timer = null;
 
     var callback = function(event) {
-        data = JSON.parse(this.response);
-
+        var data = JSON.parse(this.response);
         var list = document.querySelector("#search-results");
 
         while (list.firstChild !== null) {
@@ -85,8 +82,4 @@ WowTrends.Search = (function() {
         init: init,
         getTimer: function() { return timer; }
     };
-})();
-
-window.addEventListener("load", function() {
-    WowTrends.Search.init();
-});
+};

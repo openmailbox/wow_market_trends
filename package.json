@@ -1,0 +1,30 @@
+{
+  "name": "wow_market_trends",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A web app and assorted tools for showing trends from the World of Warcraft auction house.",
+  "main": "./web/static/src/scripts/index.js",
+  "dependencies": {
+    "webpack": "^4.17.1"
+  },
+  "devDependencies": {
+    "css-loader": "^1.0.0",
+    "style-loader": "^0.22.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openmailbox/wow_market_trends.git"
+  },
+  "author": "open_mailbox",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/openmailbox/wow_market_trends/issues"
+  },
+  "homepage": "https://github.com/openmailbox/wow_market_trends#readme"
+}

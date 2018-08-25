@@ -2,3 +2,4 @@
 *.exe
 cmd/wowexchange/wowexchange
 *.log
+node_modules

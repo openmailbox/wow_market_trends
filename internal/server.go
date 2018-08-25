@@ -213,7 +213,7 @@ func StartServer(database *sql.DB) {
 
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	http.Handle("/", http.FileServer(http.Dir("../../web/static")))
+	http.Handle("/", http.FileServer(http.Dir("../../web/static/dist")))
 	http.HandleFunc("/names", handleNameSearch)
 	http.HandleFunc("/details", handleDetails)
 
