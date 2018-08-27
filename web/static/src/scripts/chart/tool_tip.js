@@ -1,6 +1,4 @@
-var WowTrends = WowTrends || {};
-
-WowTrends.Chart.toolTip = (function() {
+export default function() {
     /**
      * @param {Object} event - The chart data provided by CanvasJS.
      * @param {Object[]} event.entries - All of the data series available to the chart.
@@ -26,4 +24,4 @@ WowTrends.Chart.toolTip = (function() {
         shared: true,
         contentFormatter: getToolTip
     };
-})();
+};

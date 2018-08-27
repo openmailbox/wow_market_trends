@@ -1,6 +1,4 @@
-var WowTrends = WowTrends || {};
-
-WowTrends.Chart.subtitles = (function() {
+export default function() {
     var priceWithChange = function() {
         var data        = WowTrends.Chart.getData();
         var difference  = data.periods[0].ask - data.periods[0].open;
@@ -21,4 +19,4 @@ WowTrends.Chart.subtitles = (function() {
     return {
         build: function() { return [priceWithChange()] }
     };
-})();
+};

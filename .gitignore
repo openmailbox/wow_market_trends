@@ -3,3 +3,4 @@
 cmd/wowexchange/wowexchange
 *.log
 node_modules
+web/static/dist/*.js

@@ -1,11 +1,15 @@
 import "../styles/main.css"
 
-import Chart from './chart.js'
 import Search from './search.js'
+import Chart from './chart.js'
+import ChartSubtitles from './chart/subtitles.js'
+import ChartTooltips from './chart/tool_tip.js'
 
 window.WowTrends = {};
 window.WowTrends.Search = Search();
 window.WowTrends.Chart = Chart();
+window.WowTrends.Chart.subtitles = ChartSubtitles();
+window.WowTrends.Chart.toolTip = ChartTooltips();
 
 CanvasJS.addColorSet("spectreColorSet", 
                      [
