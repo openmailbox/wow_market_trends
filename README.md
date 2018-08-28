@@ -4,16 +4,19 @@ A web application plus a collection of tools for importing World of Warcraft auc
 ## Dependencies
 * [Go](https://golang.org/) (tested on 1.9)
 * [PostgreSQL](https://www.postgresql.org/) (tested on 9.5)
+* [NPM](https://www.npmjs.com/) (tested on 6.4)
 
 ## Development
 1. `git clone`
 2. `cd wow_market_trends`
 3. `make`
-4. `cd cmd/wowexchange`
-5. `./wowexchange` to fetch the latest auction house snapshot
-6. `./wowexchange serve` to start a webserver locally on port 8081.
+4. Create a database using PostgreSQL (I called mine 'wow').
+5. `cat schema.sql | psql wow` to load the schema into the database.
+6. `cd cmd/wowexchange`
+7. `./wowexchange` to fetch the latest auction house snapshot
+8. `./wowexchange serve` to start a webserver locally on port 8081.
 
-In order to fetch the latest auction house snapshot data, a Blizzard API key is required. You can obtain one by registering a free account at the [Blizzard Devloper Portal](https://dev.battle.net/). Set the `BLIZZARD_API_KEY` in your environment using the obtained key.
+In order to fetch the latest auction house snapshot data, a Blizzard API key is required. You can obtain one by registering a free account at the [Blizzard Developer Portal](https://dev.battle.net/). Set the `BLIZZARD_API_KEY` in your environment using the obtained key.
 
 Change the constants in `server.go` for a different port or logging directory. Change the constant in `auctions.go` for a different WoW realm.
 
