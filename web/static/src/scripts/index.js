@@ -4,6 +4,7 @@ import Search from './search.js'
 import Chart from './chart.js'
 import ChartSubtitles from './chart/subtitles.js'
 import ChartTooltips from './chart/tool_tip.js'
+import FetchTimestamp from './last_updated.js'
 
 window.WowTrends = {};
 window.WowTrends.Search = Search();
@@ -30,4 +31,5 @@ CanvasJS.addColorSet("spectreColorSet",
 window.addEventListener("load", function() {
   window.WowTrends.Search.init();
   window.WowTrends.Chart.init();
+  FetchTimestamp();
 });

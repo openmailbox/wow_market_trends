@@ -53,6 +53,16 @@ func handleDetails(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
 }
 
+func handleLastUpdated(w http.ResponseWriter, r *http.Request) {
+	var timestamp time.Time
+
+	err := db.QueryRow(`SELECT created_at FROM periods ORDER BY id DESC LIMIT 1`).Scan(&timestamp)
+	CheckError(err)
+
+	json.NewEncoder(w).Encode(timestamp)
+	log.Printf("Completed %v %v\n", http.StatusOK, http.StatusText(http.StatusOK))
+}
+
 func handleNameSearch(w http.ResponseWriter, r *http.Request) {
 	searchTermParam := r.URL.Query()["search"]
 
@@ -216,6 +226,7 @@ func StartServer(database *sql.DB) {
 	http.Handle("/", http.FileServer(http.Dir("../../web/static/dist")))
 	http.HandleFunc("/names", handleNameSearch)
 	http.HandleFunc("/details", handleDetails)
+	http.HandleFunc("/lastUpdated", handleLastUpdated)
 
 	fmt.Printf("Logging to %v\n", logFile)
 	log.Printf("Listening on %v\n", localAddress)

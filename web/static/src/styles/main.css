@@ -45,3 +45,8 @@ header {
 #title-block h2 {
   margin-bottom: 0.5em;
 }
+
+#last-updated {
+  margin-top: 1.2em;
+  text-align: center;
+}
