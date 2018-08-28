@@ -65,14 +65,18 @@ export default function() {
                 data: [
                     {
                         type: "candlestick",
-                        dataPoints: formatData()
+                        dataPoints: formatData(),
                     },
                     {
+                        name: "Volume",
                         type: "line",
                         axisYType: "secondary",
-                        dataPoints: formatVolumeData()
+                        dataPoints: formatVolumeData(),
+                        showInLegend: true
                     },
                     {
+                        name: "7-Day Average",
+                        showInLegend: true,
                         type: "line",
                         axisYType: "primary",
                         dataPoints: formatAverageData()

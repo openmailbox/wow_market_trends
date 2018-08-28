@@ -8,6 +8,9 @@ module.exports = {
     filename: 'main.js',
     path: path.resolve(__dirname, 'web/static/dist')
   },
+  devServer: {
+    contentBase: 'web/static/dist'
+  },
   module: {
     rules: [{
       test: /\.css$/,
