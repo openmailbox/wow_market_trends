@@ -12,6 +12,10 @@ export default function() {
         _maxVolume = Math.max(..._data.periods.map(function(i) { return i.volume; }));
 
         draw();
+        
+        if (window.innerWidth < 600) {
+            _chart.axisX[0].set("viewportMinimum", _data.periods[6].created_at);
+        }
 
         var element = document.createElement("img");
         var parent  = document.querySelector("#chart-main");
