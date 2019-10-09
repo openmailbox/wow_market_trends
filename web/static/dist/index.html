@@ -6,8 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="keywords" context="wow, world of warcraft, auction house, market, trends" />
     <meta name="HandheldFreindly" content="true" />
-    <meta property="og:url" content="https://wow.open-mailbox.com" />
-    <meta property="og:title" content="World of Warcraft Market Trends" />
+
+    <meta property="og:url"           content="https://wow.open-mailbox.com" />
+    <meta property="og:title"         content="World of Warcraft Market Trends" />
+    <meta property="og:type"          content="website" />
+    <meta property="og:description"   content="Track price changes and trends in the World of Warcraft auction house." />
 
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
     <!-- <link rel="stylesheet" type="text/css" href="styles/main.css" /> -->
@@ -16,6 +19,9 @@
   </head>
 
   <body>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0"></script>
+
     <div id="title-block">
       <h1>World of Warcraft</h1>
       <h2>Market Trends</h2>
@@ -41,6 +47,18 @@
 
       <div class="columns">
         <p id="credits" class="column">Created by <a href="https://www.open-mailbox.com" target="_blank">open_mailbox</a></p>
+      </div>
+
+      <div class="columns">
+        <div class="column col-sm-1 col-5"></div>
+        <div class="fb-like column"
+             data-href="https://wow.open-mailbox.com"
+             data-layout="button_count"
+             data-action="like"
+             data-share="true"
+             data-show-faces="true">
+        </div>
+        <div class="column col-sm-1 col-5"></div>
       </div>
 
       <div id="chart-main" class="columns">

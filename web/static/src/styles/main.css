@@ -53,6 +53,7 @@ header {
 
 #credits {
   font-size: 0.8em;
+  margin-bottom: 0.2em;
   text-align: center;
 }
 
@@ -61,5 +62,9 @@ header {
 }
 
 #realm {
+  text-align: center;
+}
+
+.fb-like {
   text-align: center;
 }
