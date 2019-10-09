@@ -50,3 +50,16 @@ header {
   margin-top: 1.2em;
   text-align: center;
 }
+
+#credits {
+  font-size: 0.8em;
+  text-align: center;
+}
+
+#details {
+  margin-bottom: 1.2em;
+}
+
+#realm {
+  text-align: center;
+}
