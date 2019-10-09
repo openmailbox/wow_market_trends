@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/lib/pq"
 )
@@ -42,16 +44,23 @@ type auction struct {
 	Context    int    `json:"context"`
 }
 
+type tokenResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int    `json:"expires_in"`
+}
+
 const realmName = "archimonde"
 
 // RefreshAuctions pulls the latest auctions snapshot from dev.battle.net and stores it in PG
-func RefreshAuctions(db *sql.DB, apiKey string) {
+func RefreshAuctions(db *sql.DB, clientId string, clientSecret string) {
 	var fileID int
 
 	deleteExisting(db)
 
 	latest := loadLatest(db)
-	files := fetchDumps(apiKey)
+	token := fetchToken(clientId, clientSecret)
+	files := fetchDumps(token)
 
 	for _, file := range files {
 		if file.LastModified > latest {
@@ -122,10 +131,9 @@ func deleteExisting(db *sql.DB) {
 	CheckError(err)
 }
 
-func fetchDumps(apiKey string) []auctionDumpFile {
+func fetchDumps(token string) []auctionDumpFile {
 	log.Println("Fetching auction dump files...")
-
-	resp, err := http.Get("https://us.api.battle.net/wow/auction/data/" + realmName + "?locale=en_US&apikey=" + apiKey)
+	resp, err := http.Get("https://us.api.blizzard.com/wow/auction/data/" + realmName + "?locale=en_US&access_token=" + token)
 	CheckError(err)
 
 	var data auctionDumpResponse
@@ -160,6 +168,36 @@ func fetchAuctions(file auctionDumpFile) []auction {
 	}
 
 	return data.Auctions
+}
+
+func fetchToken(clientId string, clientSecret string) string {
+	log.Println("Fetching access token...")
+	client := &http.Client{}
+	address := "https://us.battle.net/oauth/token"
+
+	v := url.Values{}
+	v.Set("grant_type", "client_credentials")
+
+	req, err := http.NewRequest("POST", address, strings.NewReader(v.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+	CheckError(err)
+
+	req.SetBasicAuth(clientId, clientSecret)
+
+	resp, err := client.Do(req)
+	CheckError(err)
+
+	var data tokenResponse
+	decoder := json.NewDecoder(resp.Body)
+
+	err = decoder.Decode(&data)
+	CheckError(err)
+
+	if len(data.AccessToken) == 0 {
+		panic("Unable to retrieve OAuth token.")
+	}
+
+	return data.AccessToken
 }
 
 func loadAuctions(db *sql.DB) []auction {
