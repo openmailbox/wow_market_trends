@@ -68,3 +68,7 @@ header {
 .fb-like {
   text-align: center;
 }
+
+#tweet {
+  margin-top 0.5em;
+}
