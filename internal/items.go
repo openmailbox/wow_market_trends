@@ -15,7 +15,7 @@ type item struct {
 }
 
 // UpdateItems uses the battle.net API to fetch item details for item IDs in the periods table
-func UpdateItems(db *sql.DB, apiKey string) {
+func UpdateItems(db *sql.DB, token string) {
 	result, err := db.Exec(`INSERT INTO items(item_id) SELECT item_id FROM auctions GROUP BY item_id ON CONFLICT DO NOTHING`)
 	CheckError(err)
 
@@ -41,7 +41,7 @@ func UpdateItems(db *sql.DB, apiKey string) {
 		err = rows.Scan(&nextID)
 		CheckError(err)
 
-		url := fmt.Sprintf("https://us.api.battle.net/wow/item/%v?locale=en_US&apikey=%v", nextID, apiKey)
+		url := fmt.Sprintf("https://us.api.blizzard.com/wow/item/%v?locale=en_US&access_token=%v", nextID, token)
 		resp, err := http.Get(url)
 		CheckError(err)
 

@@ -30,9 +30,11 @@ func main() {
 			os.Exit(1)
 		}
 
-		internal.RefreshAuctions(db, clientId, clientSecret)
+		token := internal.FetchToken(clientId, clientSecret)
+
+		internal.RefreshAuctions(db, token)
 		internal.UpdatePeriods(db)
-		internal.UpdateItems(db, clientId)
+		internal.UpdateItems(db, token)
 
 		log.Println("Done.")
 	}

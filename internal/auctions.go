@@ -53,13 +53,12 @@ type tokenResponse struct {
 const realmName = "archimonde"
 
 // RefreshAuctions pulls the latest auctions snapshot from dev.battle.net and stores it in PG
-func RefreshAuctions(db *sql.DB, clientId string, clientSecret string) {
+func RefreshAuctions(db *sql.DB, token string) {
 	var fileID int
 
 	deleteExisting(db)
 
 	latest := loadLatest(db)
-	token := fetchToken(clientId, clientSecret)
 	files := fetchDumps(token)
 
 	for _, file := range files {
@@ -170,7 +169,7 @@ func fetchAuctions(file auctionDumpFile) []auction {
 	return data.Auctions
 }
 
-func fetchToken(clientId string, clientSecret string) string {
+func FetchToken(clientId string, clientSecret string) string {
 	log.Println("Fetching access token...")
 	client := &http.Client{}
 	address := "https://us.battle.net/oauth/token"
