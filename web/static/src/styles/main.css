@@ -65,10 +65,11 @@ header {
   text-align: center;
 }
 
-.fb-like {
+#social {
   text-align: center;
 }
 
 #tweet {
-  margin-top 0.5em;
+  margin-top: 0.29em;
+  padding-left: 0;
 }
